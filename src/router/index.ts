@@ -1,21 +1,84 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import Scene from '../views/Scene.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Scene",
+    component: Scene,
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: "/scene",
+    name: "Scene",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      import(/* webpackChunkName: "about" */ "../views/Scene.vue"),
   },
+  {
+    path: "/video",
+    name: "Video",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Video.vue"),
+  },
+  {
+    path: "/global",
+    name: "Global",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Global.vue"),
+  },
+  {
+    path: "/weather",
+    name: "Weather",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Weather.vue"),
+  },
+  {
+    path: "/floor",
+    name: "Floor",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Floor.vue"),
+  },
+  {
+    path: "/date",
+    name: "Date",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Date.vue"),
+  },
+  {
+    path: "/state",
+    name: "State",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/State.vue"),
+  },
+  {
+    path: "/monitor",
+    name: "Monitor",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Monitor.vue"),
+  },
+  {
+    path: "/lamp",
+    name: "Lamp",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Lamp.vue"),
+  },
+  {
+    path: "/airConditioner",
+    name: "AirConditioner",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/AirConditioner.vue"),
+  },
+  {
+    path: "/customize",
+    name: "Customize",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Customize.vue"),
+  },
+  {
+    path: "/overlay",
+    name: "Overlay",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Overlay.vue"),
+  }
 ];
 
 const router = createRouter({
