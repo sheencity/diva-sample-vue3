@@ -25,16 +25,14 @@
 <script lang="ts">
 import contentBlock from "@/components/content-block.vue";
 import dropDown from "@/components/dropdown.vue";
-import { diva } from "@/global";
-import { DataService } from "@/services/data.service";
+import { diva,data } from "@/global";
+
 import { onMounted, reactive } from "vue";
 import { Elevator, ElevatorController, Model, Vector3 } from "@sheencity/diva-sdk";
 import { DropdownData } from "@/models/dropdown-data.interface";
 
 export default {
   setup() {
-    const _diva = diva;
-    let _data = new DataService();
     let lifts = reactive([
       {
         title: '一号梯',
@@ -97,18 +95,18 @@ export default {
       const value = Number($event.value);
       console.log('controllers', controllers);
       controllers[i].land(`f${value}`);
-      _data.changeCode(`elevatorController.land('f${value}')`);
+      data.changeCode(`elevatorController.land('f${value}')`);
     }
 
 
   
 
     onMounted(async () => {
-      _diva.client.applyScene('电梯演示');
-      _data.changeCode(`client.applyScene('电梯演示')`);
+      diva.client.applyScene('电梯演示');
+      data.changeCode(`client.applyScene('电梯演示')`);
       lifts = lifts.map((lift, index) => addSelected(lift, index));
       for (let i = 0; i < 4; i++) {
-        const [model] = await _diva.client.getEntitiesByName<Model>(
+        const [model] = await diva.client.getEntitiesByName<Model>(
           lifts[i].title
         );
         const coord = await model.getCoordinate();

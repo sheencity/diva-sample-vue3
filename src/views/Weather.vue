@@ -18,12 +18,9 @@
   import {
     onMounted
   } from "vue";
+
   import {
-    DataService
-  } from "@/services/data.service";
-  // import { useStore } from "vuex";
-  import {
-    diva
+    diva,data
   } from "@/global";
   import {
     WeatherName
@@ -31,11 +28,9 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
       onMounted(async () => {
-        _diva.client ?.applyScene("天气控制").then(() => {
-          _data.changeCode(`client.applyScene('天气控制')`);
+        diva.client ?.applyScene("天气控制").then(() => {
+          data.changeCode(`client.applyScene('天气控制')`);
         });
       });
 
@@ -44,8 +39,8 @@
         typeName: WeatherName;
       }) => {
         if (!weather.typeName) return;
-        _diva.client ?.setWeather(weather.typeName).then(() => {
-          _data.changeCode(`client.setWether('${weather.typeName}')`);
+        diva.client ?.setWeather(weather.typeName).then(() => {
+          data.changeCode(`client.setWether('${weather.typeName}')`);
         });
       };
 

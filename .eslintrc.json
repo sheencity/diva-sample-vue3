@@ -1,7 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "commonjs": true
     },
     "extends": [
         "eslint:recommended",
@@ -22,6 +22,6 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "vue/no-unused-components": "off"
+        "no-unused-vars":"off"
     }
 }

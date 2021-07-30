@@ -35,6 +35,7 @@
       const onClick = (e) => {
         e.stopPropagation();
         context.emit("switch", !isOn.value);
+        context.emit("update:modelValue", !isOn.value);
       };
       return {
         lab: label,

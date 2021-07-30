@@ -30,14 +30,9 @@
 
 <script lang="ts">
   import contentBlock from '@/components/content-block.vue'
-  import dropDown from '@/components/dropdown.vue'
-  import switcher from '@/components/switcher.vue'
   import {
-    diva
+    diva,data
   } from '@/global'
-  import {
-    DataService
-  } from '@/services/data.service';
   import {
     onMounted,
     onUnmounted,
@@ -51,8 +46,6 @@
   export default {
 
     setup() {
-      const _diva = diva;
-      let _data = new DataService;
       let monitors = [{
           title: '测试设备01',
           url: 'rtmp://xxxxxxxxxxxxxxxxxx',
@@ -96,7 +89,7 @@
         }
         if (!url) return;
         await monitor.setWebWidget(new URL(url), 500, 280);
-        _data.changeCode(`model.setWebWidget(new URL('${url}'), 500, 280)`);
+        data.changeCode(`model.setWebWidget(new URL('${url}'), 500, 280)`);
       }
       const refresh = async (monitorEqui: {
         title: string;url: string
@@ -111,13 +104,13 @@
 
       const selectMonitor = async (name: string) => {
         await (await getModelByName(name)).focus(1000, -Math.PI / 6);
-        _data.changeCode(`model.focus(1000, -Math.PI / 6)`);
+        data.changeCode(`model.focus(1000, -Math.PI / 6)`);
       }
 
       const getModelByName = async (name: string) => {
         let m = models.get(name);
         if (!m) {
-          m = (await _diva.client.getEntitiesByName < Model > (name))[0];
+          m = (await diva.client.getEntitiesByName < Model > (name))[0];
           models.set(name, m);
         }
         return m;
@@ -128,12 +121,29 @@
       }
 
       onMounted(async () => {
-        _diva.client.applyScene('监控设备').then(() => {
-          _data.changeCode(`client.applyScene('监控设备')`);
+        const monitors = [{
+            title: '测试设备01',
+            url: 'rtmp://xxxxxxxxxxxxxxxxxx',
+          },
+          {
+            title: '测试设备02',
+            url: 'rtmp://xxxxxxxxxxxxxxxxxx',
+          },
+          {
+            title: '测试设备03',
+            url: 'https://www.sheencity.com',
+          },
+          {
+            title: '测试设备04',
+            url: 'https://www.sheencity.com',
+          }
+        ];
+        diva.client.applyScene('监控设备').then(() => {
+          data.changeCode(`client.applyScene('监控设备')`);
         });
         models = new Map();
         monitorHandlers = [];
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < monitors.length; i++) {
           const model = await getModelByName(monitors[i].title);
           const handle = function () {
             const url = monitors.find((m) => m.title === this.name).url;
@@ -162,8 +172,6 @@
     },
     components: {
       contentBlock,
-      dropDown,
-      switcher
     }
   }
 </script>

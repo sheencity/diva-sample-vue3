@@ -14,14 +14,11 @@
 
 <script lang="ts">
   import contentBlock from "@/components/content-block.vue";
-  import dropDown from "@/components/dropdown.vue";
   import switcher from "@/components/switcher.vue";
   import {
-    diva
+    diva,data
   } from "@/global";
-  import {
-    DataService
-  } from "@/services/data.service";
+
   import {
     onMounted
   } from "vue";
@@ -32,9 +29,6 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
-
       let lightDecs = [{
           title: "测试灯光01",
           state: true,
@@ -70,7 +64,7 @@
           ?
           lightControllers[index].turnOn() :
           lightControllers[index].turnOff();
-        _data.changeCode(`device.${$event ? "turnOn()" : "turnOff()"}`);
+        data.changeCode(`device.${$event ? "turnOn()" : "turnOff()"}`);
         console.log($event, index);
       };
 
@@ -83,25 +77,25 @@
         console.log(index)
         if (!lights[index]) return;
         await lights[index].focus(1000, -Math.PI / 6);
-        _data.changeCode(`device.focus(1000, -Math.PI / 6)`);
+        data.changeCode(`device.focus(1000, -Math.PI / 6)`);
       };
 
       onMounted(async () => {
-        _diva.client.applyScene("灯光控制");
+        diva.client.applyScene("灯光控制");
         // 初始化设备的初始状态
         lightDecs.forEach((lightDec) => (lightDec.state = true));
         lightDecs.forEach(async (lightDec) => {
           const lightController = new DeviceController();
-          const [light] = await _diva.client.getEntitiesByName < Device > (
+          const [light] = await diva.client.getEntitiesByName < Device > (
             lightDec.title
           );
           light.bind(lightController.signal); // 绑定控制器
-          lightController.turnOff();
+          lightController.turnOn();
           lights.push(light);
           lightControllers.push(lightController);
         });
         setTimeout(() => {
-          _data.changeCode(`client.applyScene('灯光控制')`);
+          data.changeCode(`client.applyScene('灯光控制')`);
         }, 0);
       });
 
@@ -113,7 +107,6 @@
     },
     components: {
       contentBlock,
-      dropDown,
       switcher,
     },
   };

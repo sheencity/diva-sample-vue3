@@ -58,11 +58,9 @@
   import dropDown from "@/components/dropdown.vue";
   import switcher from "@/components/switcher.vue";
   import {
-    diva
+    diva,data
   } from "@/global";
-  import {
-    DataService
-  } from "@/services/data.service";
+
   import {
     onMounted,
     onUnmounted
@@ -73,16 +71,14 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
       // 罗盘
       let compass: boolean = false;
 
       const select = (v) => {
-        _diva.client.setMovementMode(
+        diva.client.setMovementMode(
           v.value == "true" ? MovementMode.ThirdPerson : MovementMode.Fly
         );
-        _data.changeCode(
+        data.changeCode(
           `client.setMovementMode(${
           v.value == "true" ? "MovementMode.ThirdPerson" : "MovementMode.Fly"
         })`
@@ -90,22 +86,22 @@
       };
       const swit = (v) => {
         compass = v;
-        _diva.client.setCompass(v);
-        _data.changeCode(`client.setCompass(${v})`);
+        diva.client.setCompass(v);
+        data.changeCode(`client.setCompass(${v})`);
       };
 
       onMounted(async () => {
-        await _diva.client.applyScene("全局配置");
-        compass = _data.compass;
-        _diva.client.setCompass(compass);
-        _data.changeCode(`client.setCompass(${compass})`);
+        await diva.client.applyScene("全局配置");
+        compass = data.compass;
+        diva.client.setCompass(compass);
+        data.changeCode(`client.setCompass(${compass})`);
         setTimeout(() => {
-          _data.changeCode(`client.applyScene('全局配置')`);
+          data.changeCode(`client.applyScene('全局配置')`);
         }, 0);
       });
 
       onUnmounted(() => {
-        _diva.client.setMovementMode(MovementMode.Fly);
+        diva.client.setMovementMode(MovementMode.Fly);
       });
 
       return {

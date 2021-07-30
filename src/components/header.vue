@@ -6,24 +6,29 @@
     </div>
     <div class="info">
       <div class="exampleCode">
+        <switcher class="switcher" v-model="exampleCode" label="显示示例代码"></switcher>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import {
-    Options,
-    Vue
-  } from "vue-class-component";
+  import switcher from "@/components/switcher.vue";
+import { ref, watch } from '@vue/runtime-core';
 
-  @Options({
-    props: {
-      msg: String,
+  export default{
+    setup(props, context){
+      let exampleCode = ref(false);
+      watch(exampleCode,(newValue,oldValue)=>{
+        context.emit('showCode', newValue);
+      })
+      return {
+        exampleCode
+      };
     },
-  })
-  export default class Header extends Vue {
-    msg!: string;
+    components:{
+      switcher
+    }
   }
 </script>
 
@@ -35,7 +40,7 @@
     align-items: center;
     height: 94px;
     box-sizing: border-box;
-    margin: 54px 60px 0;
+    margin: 50px 60px 0;
 
     .title {
       position: relative;
@@ -76,7 +81,7 @@
         line-height: 43px;
 
         // margin-right: 24px;
-        app-switcher {
+        .switcher {
           width: 117px;
           pointer-events: all;
         }

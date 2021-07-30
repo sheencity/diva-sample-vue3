@@ -43,12 +43,10 @@
     onUnmounted,
     ref
   } from "vue";
-  import {
-    DataService
-  } from "@/services/data.service";
+
   // import { useStore } from "vuex";
   import {
-    diva
+    diva,data
   } from "@/global";
   import {
     WeatherName
@@ -56,8 +54,6 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
       // 自定义日期
       let date = ref();
       // 自定义时间
@@ -66,10 +62,10 @@
       onMounted(async () => {
         date.value = getDate("date");
         time.value = getDate("time");
-        _diva.client.setDate(new Date());
-        _diva.client.setTime(new Date());
-        _diva.client ?.applyScene("日期时间").then(() => {
-          _data.changeCode(`client.applyScene('日期时间')`);
+        diva.client.setDate(new Date());
+        diva.client.setTime(new Date());
+        diva.client ?.applyScene("日期时间").then(() => {
+          data.changeCode(`client.applyScene('日期时间')`);
         });
       });
 
@@ -80,8 +76,8 @@
        */
       const onDateChange = ($event: any) => {
         const date = new Date($event.target.value);
-        _diva.client.setDate(date);
-        _data.changeCode(`client.setDate(new Date('${date}'))`);
+        diva.client.setDate(date);
+        data.changeCode(`client.setDate(new Date('${date}'))`);
       };
 
       /**
@@ -96,8 +92,8 @@
             second: number
           ])
         );
-        _diva.client.setTime(time);
-        _data.changeCode(`client.setTime(new Date('${time}'))`);
+        diva.client.setTime(time);
+        data.changeCode(`client.setTime(new Date('${time}'))`);
       };
 
       const switchSeason = async (season: {
@@ -105,22 +101,22 @@
         value: string;
         name: string;
       }) => {
-        await _diva.client.setDate(new Date(season.value));
+        await diva.client.setDate(new Date(season.value));
         if (season.name === "winterSnow") {
-          await _diva.client.setWeather(WeatherName.Snow);
+          await diva.client.setWeather(WeatherName.Snow);
         } else {
-          await _diva.client.setWeather(WeatherName.Default);
+          await diva.client.setWeather(WeatherName.Default);
         }
         if (season.name === "winterSnow") {
-          _data.changeCode(
+          data.changeCode(
             `client.setDate(new Date('${season.value}'));`,
             `client.setWeather('snow')`
           );
         } else if (season.name === "autumn") {
           // 秋季需要设置 11-01， 代码显示 09-23
-          _data.changeCode(`client.setDate(new Date('2021-09-23'))`);
+          data.changeCode(`client.setDate(new Date('2021-09-23'))`);
         } else {
-          _data.changeCode(`client.setDate(new Date('${season.value}'))`);
+          data.changeCode(`client.setDate(new Date('${season.value}'))`);
         }
       };
 
@@ -133,8 +129,8 @@
         value: number;
         name: string;
       }) => {
-        _diva.client.setTime(getTime(noon.value, 0));
-        _data.changeCode(
+        diva.client.setTime(getTime(noon.value, 0));
+        data.changeCode(
           "const now = new Date();",
           `const time = (now.setHours(${noon.value}), now);`,
           "client.setTime(time);"
@@ -168,7 +164,7 @@
         return v < 10 ? `0${v}` : `${v}`;
       };
       onUnmounted(() => {
-        _diva.client.setWeather(WeatherName.Default);
+        diva.client.setWeather(WeatherName.Default);
       });
       return {
         //各种场景

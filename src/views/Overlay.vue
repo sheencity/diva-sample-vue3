@@ -27,7 +27,7 @@
           </div>
         </div>
       </div>
-      <div class="input-item" v-if="selectedType.value === 'label'">
+      <div class="input-item" v-if="selectedType.value === 'Marker'">
         <span>标题</span>
         <input @keydown="onKeyDown($event)" type="text" v-model="title" placeholder="请输入文字" />
       </div>
@@ -36,7 +36,7 @@
         <span>内容</span>
         <textarea cols="4" @keydown="onKeyDown($event)" v-model="content" placeholder="请输入文字"></textarea>
       </div>
-      <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'label'">
+      <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'Marker'">
         <span>对齐方式</span>
         <div>
           <drop-down :options="alignOptions" :initvalue="alignInintval" @select="setSelectedAlign" :disabled="false">
@@ -83,11 +83,11 @@
         <span>不透明度</span>
         <input-number :min="0" :max="100" v-model="opacity"></input-number>
       </div>
-      <div class="input-item" v-if="selectedType.value === 'label'">
+      <div class="input-item" v-if="selectedType.value === 'Marker'">
         <span>边框大小</span>
         <input-number :min="0" :max="1" v-model="border"></input-number>
       </div>
-      <div class="input-item" v-if="selectedType.value === 'label'">
+      <div class="input-item" v-if="selectedType.value === 'Marker'">
         <span>边框颜色</span>
         <input v-model="borderColor" type="color" />
       </div>
@@ -130,11 +130,9 @@
   import dropDown from "@/components/dropdown.vue";
   import inputNumber from "@/components/input-number.vue"
   import {
-    diva
+    diva,data
   } from "@/global";
-  import {
-    DataService
-  } from "@/services/data.service";
+
   import {
     LocalStorageService
   } from "@/services/localStorage.service";
@@ -146,21 +144,20 @@
   } from "vue";
   import {
     Emissive,
-    Matrix,
+    Marker,
     Model,
     POI,
     Quaternion,
-    TextLabel,
-    Vector3
+    Vector3,
   } from "@sheencity/diva-sdk";
   import {
     EmissionType,
     EmissiveOverlay,
-    LabelOverlay,
+    MarkerOverlay,
     OverlayType,
     POIIcon,
-    POIOverlay
-  } from '@/models/overlay.model';
+    POIOverlay,
+  } from '@/models/overlay.model'
   import {
     DropdownData
   } from '@/models/dropdown-data.interface';
@@ -172,20 +169,18 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
       let store = new LocalStorageService();
       let typeOptions = [{
           value: OverlayType.POI,
           placeholder: 'POI'
         },
         {
-          value: OverlayType.Label,
-          placeholder: 'Label'
+          value: OverlayType.Marker,
+          placeholder: 'Marker'
         },
         {
           value: OverlayType.Emissive,
-          placeholder: 'Emissive'
+          placeholder: 'Effect'
         },
       ];
       let alignOptions = [{
@@ -291,7 +286,7 @@
           placeholder: '圆形区域轮廓03'
         },
       ];
-      let overlays: (POIOverlay | LabelOverlay | EmissiveOverlay)[] = reactive([]);
+      let overlays: (POIOverlay | MarkerOverlay | EmissiveOverlay)[] = reactive([]);
       let selectedType = reactive({
         value: OverlayType.POI,
         placeholder: 'POI',
@@ -324,108 +319,95 @@
       let selectedAlign = {
         value: 'center',
         placeholder: '居中',
-      }as{
-        value: 'left' | 'start' | 'right' | 'end' | 'center' | 'justify';
-        placeholder: string;
-      };
-
-
-
-
+      }as {value: 'left' | 'right' | 'center';placeholder: string;};
 
 
       /**
        * 创建覆盖物
        */
       const create = async () => {
-        console.log(typeof (scale.value));
-        console.log(scale)
         if (selectedType.value === OverlayType.POI) {
           const overlay = new POIOverlay();
           overlay.icon = selectedIcon.value as POIIcon;
-          overlay.corrdinateX = corrdinateX.value;
-          overlay.corrdinateY = corrdinateY.value;
-          overlay.corrdinateZ = corrdinateZ.value;
+          overlay.coordinateX = corrdinateX.value;
+          overlay.coordinateY = corrdinateY.value;
+          overlay.coordinateZ = corrdinateZ.value;
           overlay.content = content.value;
           overlay.color = color.value;
           overlay.scale = scale.value;
-          console.log(overlay.scale)
           overlay.opacity = opacity.value;
-          console.log(overlay)
           const poiOverlay = new POI({
-            id: overlay.id,
-            label: overlay.content,
             icon: overlay.icon,
+            title: overlay.content,
             backgroundColor: overlay.color,
             opacity: overlay.opacity,
-            transform: Matrix.Translation(
-              overlay.corrdinateX,
-              overlay.corrdinateY,
-              overlay.corrdinateZ
-            ),
             scale: overlay.scale,
+            coord: new Vector3(
+              overlay.coordinateX,
+              overlay.coordinateY,
+              overlay.coordinateZ
+            ),
+            resource: {
+              name: 'POI文字标签',
+            },
+            id: overlay.id,
             name: overlay.content,
           });
-          poiOverlay.attach(_diva.client);
-          await poiOverlay.create();
+          await poiOverlay.setClient(diva.client);
           poiOverlay.focus(1000, -Math.PI / 6);
           store.storeOverlay(overlay);
-          _data.changeCode(
+          data.changeCode(
             `const overlay = new POI(config_learnMoreInTutorial);`,
-            `overlay.attach(client);`,
-            `await overlay.create();`
+            `await overlay.setClient(diva.client);`
           );
-        } else if (selectedType.value === OverlayType.Label) {
-          const overlay = new LabelOverlay();
-          overlay.corrdinateX = corrdinateX.value;
-          overlay.corrdinateY = corrdinateY.value;
-          overlay.corrdinateZ = corrdinateZ.value;
+        } else if (selectedType.value === OverlayType.Marker) {
+          const overlay = new MarkerOverlay();
+          overlay.coordinateX = corrdinateX.value;
+          overlay.coordinateY = corrdinateY.value;
+          overlay.coordinateZ = corrdinateZ.value;
           overlay.title = title.value;
           overlay.content = content.value;
           overlay.align = selectedAlign.value;
           overlay.color = color.value;
           overlay.scale = scale.value;
           overlay.opacity = opacity.value;
-          overlay.border = border.value;
+          overlay.borderWidth = border.value;
           overlay.borderColor = borderColor.value;
-          const textOverlay = new TextLabel({
-            id: overlay.id,
+          const markerOverlay = new Marker({
             title: overlay.title,
-            content: {
-              text: overlay.content,
-              align: overlay.align,
-              color: 'auto',
-            },
-            backgroundColor: overlay.color,
-            transform: Matrix.Translation(
-              overlay.corrdinateX,
-              overlay.corrdinateY,
-              overlay.corrdinateZ
-            ),
+            content: overlay.content,
+            align: overlay.align,
             border: {
               color: overlay.borderColor,
-              width: overlay.border,
-              radius: 0,
+              width: overlay.borderWidth,
             },
+            backgroundColor: overlay.color,
             opacity: overlay.opacity,
             scale: overlay.scale,
+            coord: new Vector3(
+              overlay.coordinateX,
+              overlay.coordinateY,
+              overlay.coordinateZ
+            ),
+            resource: {
+              name: '文字标签',
+            },
+            id: overlay.id,
             name: overlay.title,
           });
-          textOverlay.attach(_diva.client);
-          await textOverlay.create();
-          textOverlay.focus(1000, -Math.PI / 6);
+          await markerOverlay.setClient(diva.client);
+          markerOverlay.focus(1000, -Math.PI / 6);
           store.storeOverlay(overlay);
-          _data.changeCode(
-            `const overlay = new TextLabel(config_learnMoreInTutorial);`,
-            `overlay.attach(client);`,
-            `await overlay.create();`
+          data.changeCode(
+            `const overlay = new Marker(config_learnMoreInTutorial);`,
+            `await overlay.setClient(diva.client);`
           );
         } else if (selectedType.value === OverlayType.Emissive) {
           const overlay = new EmissiveOverlay();
           overlay.icon = selectedEmissive.value;
-          overlay.corrdinateX = corrdinateX.value;
-          overlay.corrdinateY = corrdinateY.value;
-          overlay.corrdinateZ = corrdinateZ.value;
+          overlay.coordinateX = corrdinateX.value;
+          overlay.coordinateY = corrdinateY.value;
+          overlay.coordinateZ = corrdinateZ.value;
           overlay.color = color.value;
           overlay.emission = emission.value;
           overlay.speed = speed.value;
@@ -434,46 +416,32 @@
           overlay.rotationZ = rotationZ.value;
           overlay.scale = scale.value;
           const emissiveOverlay = new Emissive({
-            id: overlay.id,
-            // transform: Matrix.RotationYawPitchRoll(
-            //   overlay.rotationY,
-            //   overlay.rotationX,
-            //   overlay.rotationZ,
-            // ).scaleInPlace(
-            //   overlay.scale
-            // ).addTranslation(
-            //   overlay.corrdinateX,
-            //   overlay.corrdinateY,
-            //   overlay.corrdinateZ
-            // ),
-            resource: {
-              id: '',
-              name: overlay.icon,
-            },
             emissionColor: overlay.color,
             emissionStrength: overlay.emission,
             speed: overlay.speed,
-            name: overlay.icon,
             coord: new Vector3(
-              overlay.corrdinateX,
-              overlay.corrdinateY,
-              overlay.corrdinateZ
+              overlay.coordinateX,
+              overlay.coordinateY,
+              overlay.coordinateZ
             ),
             rotation: Quaternion.FromEulerAngles(
-              overlay.rotationX,
-              overlay.rotationY,
-              overlay.rotationZ
+              (overlay.rotationX * Math.PI) / 180,
+              (overlay.rotationY * Math.PI) / 180,
+              (overlay.rotationZ * Math.PI) / 180
             ),
             scale: new Vector3(overlay.scale, overlay.scale, overlay.scale),
+            resource: {
+              name: overlay.icon,
+            },
+            id: overlay.id,
+            name: overlay.icon,
           });
-          emissiveOverlay.attach(_diva.client);
-          await emissiveOverlay.create();
+          await emissiveOverlay.setClient(diva.client);
           emissiveOverlay.focus(1000, -Math.PI / 6);
           store.storeOverlay(overlay);
-          _data.changeCode(
+          data.changeCode(
             `const overlay = new Emissive(config_learnMoreInTutorial);`,
-            `overlay.attach(client);`,
-            `await overlay.create();`
+            `await overlay.setClient(diva.client);`
           );
         }
         overlays.length = 0;
@@ -487,17 +455,16 @@
       /**
        * 删除覆盖物
        */
-      const del = async ($event: Event, overlay: POIOverlay | LabelOverlay | EmissiveOverlay) => {
+      const del = async ($event: Event,overlay: POIOverlay | MarkerOverlay | EmissiveOverlay) => {
         $event.stopPropagation();
         store.deleteOverlay(overlay);
+        const entity = await diva.client.getEntityById(overlay.id);
+        await entity.setClient(null);
+        data.changeCode(`entity.setClient(null)`);
         overlays.length = 0;
         store.getAllOverlays().forEach(e => {
           overlays.push(e);
         })
-        const entity = await _diva.client.getEntityById(overlay.id);
-        await entity.destroy();
-        await entity.detach();
-        _data.changeCode(`entity.destroy()`);
       }
 
 
@@ -536,11 +503,11 @@
       /**
        * 聚焦覆盖物
        */
-      const selectOverlay = async (overlay: POIOverlay | LabelOverlay | EmissiveOverlay) => {
+      const selectOverlay = async (overlay: POIOverlay | MarkerOverlay | EmissiveOverlay) => {
         selectedId = overlay.id;
-        const entity = await _diva.client.getEntityById < Model > (overlay.id);
+        const entity = await diva.client.getEntityById < Model > (overlay.id);
         entity.focus(1000, -Math.PI / 6);
-        _data.changeCode(`model.focus(1000, -Math.PI / 6)`);
+        data.changeCode(`model.focus(1000, -Math.PI / 6)`);
       }
       /**
        * 拾取世界坐标
@@ -553,7 +520,7 @@
           corrdinateZ.value = wordPosition.z;
           document.body.style.cursor = 'default';
         };
-        await _diva.client.addEventListener('click', handler, {
+        await diva.client.addEventListener('click', handler, {
           once: true
         });
         document.body.style.cursor = 'crosshair';
@@ -572,10 +539,10 @@
         store.getAllOverlays().forEach(e => {
           overlays.push(e);
         })
-        await _diva.client ?.applyScene('覆盖物');
-        _data.changeCode(`client.applyScene('覆盖物')`);
+        await diva.client ?.applyScene('覆盖物');
+        data.changeCode(`client.applyScene('覆盖物')`);
         overlays.map(async (overlay) => {
-          const entity = await _diva.client.getEntityById < Model > (overlay.id);
+          const entity = await diva.client.getEntityById < Model > (overlay.id);
           entity.setVisibility(true);
         });
 
@@ -658,7 +625,12 @@
 
 <style lang="scss">
   .overlay-main {
+    .content-block-main {
+      width: 282px;
+    }
+
     pointer-events: all;
+    width: 282px;
 
     .overlay-block {
       width: 282px;
@@ -697,14 +669,14 @@
         }
 
         .coordinate-items {
-          width: 194px;
+          width: 174px;
           display: flex;
           justify-content: space-between;
 
           .coordinate-item {
             display: flex;
             justify-content: space-between;
-            width: 62px;
+            width: 55px;
 
             span {
               font-weight: normal;
@@ -713,7 +685,7 @@
             }
 
             input {
-              width: 49px;
+              width: 45px;
             }
           }
         }
@@ -882,5 +854,6 @@
       border: 4px solid transparent;
       border-radius: 7px;
     }
+
   }
 </style>

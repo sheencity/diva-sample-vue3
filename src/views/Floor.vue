@@ -43,11 +43,9 @@
   import {
     DropdownData
   } from "@/models/dropdown-data.interface";
+
   import {
-    DataService
-  } from "@/services/data.service";
-  import {
-    diva
+    diva,data
   } from "@/global";
   import {
     Model,
@@ -64,8 +62,7 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
+
       // 所有楼层模型
       let models: Model[] = [];
       // 所有管道模型
@@ -169,7 +166,7 @@
           else group.assemble();
 
           explode.value = val;
-          _data.changeCode(
+          data.changeCode(
             `const group = client.getEntityGroupByGroupPath('场景模型/主楼拆分');`,
             val ?
             "client.disassemble(group, { spacing: 300, eachHeight: 290, duration: 5 })" :
@@ -250,7 +247,7 @@
         await setVisibility(modelToHide, false);
         await setVisibility(pipeToHide, false);
         await setVisibility(pipeToShow, pipe.value ? true : false);
-        _data.changeCode(
+        data.changeCode(
           `client.setVisibility(${[
           ...modelToFocus.map((model) => `'${model.id}'`),
         ]}, true)`
@@ -260,7 +257,7 @@
       // 聚焦方法
       const focus = async (model: Model) => {
         await model.focus(5000, -Math.PI / 6);
-        _data.changeCode(`model.focus(5000, -Math.PI / 6)`);
+        data.changeCode(`model.focus(5000, -Math.PI / 6)`);
       };
       // 显示隐藏方法
       const setVisibility = (
@@ -270,7 +267,7 @@
       ) => {
         models.map((model) => model.setVisibility(visible));
         if (!leave) {
-          _data.changeCode(
+          data.changeCode(
             `client.setVisibility(${[
             ...models.map((model) => `'${model.id}'`),
           ]}, ${visible})`
@@ -279,20 +276,20 @@
       };
       // 获取模型方法
       const getModel = async (name: string) => {
-        const [model] = await _diva.client.getEntitiesByName < Model > (name);
+        const [model] = await diva.client.getEntitiesByName < Model > (name);
         return model;
       };
       // 设置路径显示隐藏
       const SetPathVisibility = (v: boolean) => {
         const pathIndexArray = [0, 1, 2, 3, 4];
         pathIndexArray.forEach((i) => {
-          _diva.client.setPathVisibility(i, v);
+          diva.client.setPathVisibility(i, v);
         });
       };
 
       onMounted(async () => {
-        await _diva.client ?.applyScene("楼层展示");
-        _data.changeCode(`client.applyScene('楼层展示')`);
+        await diva.client ?.applyScene("楼层展示");
+        data.changeCode(`client.applyScene('楼层展示')`);
         options.value.forEach(async (option) => {
           const model = await getModel(option.value);
           const pipeModel = await getModel(option.pipeLineName);
@@ -302,7 +299,7 @@
         });
         SetPathVisibility(false);
         const getGroup = () =>
-          from(_diva.client.getModelGroupByGroupPath("场景模型/主楼拆分"));
+          from(diva.client.getModelGroupByGroupPath("场景模型/主楼拆分"));
         group$ = defer(getGroup).pipe(shareReplay(1));
       });
 

@@ -18,23 +18,15 @@
     onMounted
   } from "vue";
   import {
-    DataService
-  } from "@/services/data.service";
-  // import { useStore } from "vuex";
-  import {
-    diva
+    diva,data
   } from "@/global";
 
   export default {
     setup() {
-      // const store = useStore()
-      // const _diva: DivaService = store.state._diva;
-      const _diva = diva;
-      let _data = new DataService();
       onMounted(async () => {
-        console.log(_diva.client);
-        _diva.client ?.applyScene("半鸟瞰").then(() => {
-          _data.changeCode(`client.applyScene('半鸟瞰')`);
+        console.log(diva.client);
+        diva.client ?.applyScene("半鸟瞰").then(() => {
+          data.changeCode(`client.applyScene('半鸟瞰')`);
         });
       });
 
@@ -42,9 +34,9 @@
         title: string;index: number
       }) => {
         console.log(scene.index);
-        console.log(_diva);
-        _diva.client ?.applyScene(scene.index).then(() => {
-          _data.changeCode(`client.applyScene('${scene.title}')`);
+        console.log(diva);
+        diva.client ?.applyScene(scene.index).then(() => {
+          data.changeCode(`client.applyScene('${scene.title}')`);
         });
       };
 

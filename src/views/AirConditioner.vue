@@ -16,11 +16,8 @@
   import contentBlock from "@/components/content-block.vue";
   import switcher from "@/components/switcher.vue";
   import {
-    diva
+    diva,data
   } from "@/global";
-  import {
-    DataService
-  } from "@/services/data.service";
   import {
     onMounted,
     onUnmounted,
@@ -34,8 +31,6 @@
   export default {
     airDecs: [],
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
 
       // 自动的空调设备
       let airDecs: {
@@ -65,19 +60,19 @@
 
 
       onMounted(async () => {
-        _diva.client.applyScene('空调控制');
+        diva.client.applyScene('空调控制');
         // 初始化设备的初始状态
         airDecs.forEach((airDec) => (airDec.state = false));
         airDecs.forEach(async (airDec) => {
           const airController = new DeviceController();
-          const [air] = await _diva.client.getEntitiesByName < Device > (airDec.title);
+          const [air] = await diva.client.getEntitiesByName < Device > (airDec.title);
           air.bind(airController.signal); // 绑定控制器
           airController.turnOff();
           airs.push(air);
           airControllers.push(airController);
         })
         setTimeout(() => {
-          _data.changeCode(`client.applyScene('空调控制')`)
+          data.changeCode(`client.applyScene('空调控制')`)
         }, 0);
       });
 
@@ -90,7 +85,7 @@
       const onSwitch = ($event: boolean, index: number) => {
         if (airControllers.length === 0) return;
         $event ? airControllers[index].turnOn() : airControllers[index].turnOff();
-        _data.changeCode(`device.${$event ? 'turnOn()' : 'turnOff()'}`);
+        data.changeCode(`device.${$event ? 'turnOn()' : 'turnOff()'}`);
         console.log($event, index);
       }
 
@@ -102,7 +97,7 @@
       const onClick = async (index: number) => {
         if (!airs[index]) return;
         await airs[index].focus(1000, -Math.PI / 6);
-        _data.changeCode(`device.focus(1000, -Math.PI / 6)`);
+        data.changeCode(`device.focus(1000, -Math.PI / 6)`);
       }
 
       onUnmounted(() => {

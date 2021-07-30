@@ -16,13 +16,10 @@
 <script lang="ts">
   import contentBlock from "@/components/content-block.vue";
   import dropDown from "@/components/dropdown.vue";
-  import switcher from "@/components/switcher.vue";
   import {
-    diva
+    diva,data
   } from "@/global";
-  import {
-    DataService
-  } from "@/services/data.service";
+
   import {
     onMounted,
     onUnmounted,
@@ -38,8 +35,6 @@
 
   export default {
     setup() {
-      const _diva = diva;
-      let _data = new DataService();
       let equipments = [{
           title: "空调",
           state: RenderingStyleMode.Default,
@@ -126,12 +121,12 @@
         },
         $event: DropdownData
       ) => {
-        const [model] = await _diva.client.getEntitiesByName < Model > (equi.title);
+        const [model] = await diva.client.getEntitiesByName < Model > (equi.title);
         if (!model) return;
         const type = $event.value as RenderingStyleMode;
         model.setRenderingStyleMode(type);
 
-        _data.changeCode(
+        data.changeCode(
           `model.setRenderingStyleMode(RenderingStyleMode.${
           type.slice(0, 1).toUpperCase() + type.slice(1)
         })`
@@ -139,14 +134,14 @@
       };
 
       onMounted(async () => {
-        _diva.client ?.applyScene("状态演示").then(() => {
-          _data.changeCode(`client.applyScene('状态演示')`);
+        diva.client ?.applyScene("状态演示").then(() => {
+          data.changeCode(`client.applyScene('状态演示')`);
         });
       });
 
       onUnmounted(() => {
         equipments.forEach(async (equi) => {
-          const [model] = await _diva.client.getEntitiesByName < Model > (equi.title);
+          const [model] = await diva.client.getEntitiesByName < Model > (equi.title);
           model.setRenderingStyleMode(RenderingStyleMode.Default);
         });
       });
@@ -165,7 +160,6 @@
     components: {
       contentBlock,
       dropDown,
-      switcher,
     },
   };
 </script>

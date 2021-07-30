@@ -17,20 +17,16 @@
   import {
     onMounted
   } from "vue";
+
   import {
-    DataService
-  } from "@/services/data.service";
-  import {
-    diva
+    diva,data
   } from "@/global";
 
   export default {
     setup() {
-      const _diva = diva; 
-      let _data = new DataService();
       onMounted(async () => {
-        _diva.client ?.applyScene("半鸟瞰").then(() => {
-          _data.changeCode(`client.applyScene('半鸟瞰')`);
+        diva.client ?.applyScene("半鸟瞰").then(() => {
+          data.changeCode(`client.applyScene('半鸟瞰')`);
         });
       });
 
@@ -38,9 +34,9 @@
       const toggleVideo = async (video: {
         title: string;index: number
       }) => {
-        await _diva.client ?.stopCameraTrack();
-        await _diva.client ?.playCameraTrack(video.index);
-        _data.changeCode(`client.playCameraTrack('${video.title}')`);
+        await diva.client ?.stopCameraTrack();
+        await diva.client ?.playCameraTrack(video.index);
+        data.changeCode(`client.playCameraTrack('${video.title}')`);
       };
 
       return {
