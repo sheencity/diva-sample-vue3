@@ -1,24 +1,38 @@
-# diva-sample-vue
+<h1 align="center">DIVA Sample</h1>
+<div align="center">
+  <strong>Digital Intelligence Visualization API</strong>
+</div>
+<br />
 
-## Project setup
+该项目为调用 diva-sdk 接口的案例。
+
+## 下载
+
+```shell
+git clone https://github.com/sheencity/diva-sample-vue
 ```
+
+## 安装依赖
+
+- node v14 lts
+- npm v7
+
+```shell
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
+## 运行项目
+
+```shell
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
+项目将运行在 `http://localhost:8083/`。
+
+## 打包项目
+
+```javascript
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+打包文件将存储在 `dist/` 目录中，可以通过添加 `--prod` 标记打包生产环境文件。
