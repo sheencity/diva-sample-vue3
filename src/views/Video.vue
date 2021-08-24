@@ -15,7 +15,8 @@
 <script lang="ts">
   import contentBlock from "@/components/content-block.vue";
   import {
-    onMounted
+    onMounted,
+    onUnmounted
   } from "vue";
 
   import {
@@ -29,6 +30,10 @@
           data.changeCode(`client.applyScene('半鸟瞰')`);
         });
       });
+      
+      onUnmounted(() => {
+        diva.client.stopCameraTrack();
+      }) 
 
       // 点击事件
       const toggleVideo = async (video: {

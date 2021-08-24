@@ -147,9 +147,14 @@
     Marker,
     Model,
     POI,
+    POIIcon
+  } from "@sheencity/diva-sdk";
+  import {
     Quaternion,
     Vector3,
-  } from "@sheencity/diva-sdk";
+    Euler, 
+    deg2rad
+  } from "@sheencity/diva-sdk-math";
   import {
     EmissionType,
     EmissiveOverlay,
@@ -341,7 +346,7 @@
             title: overlay.content,
             backgroundColor: overlay.color,
             opacity: overlay.opacity,
-            scale: overlay.scale,
+            scale: new Vector3(overlay.scale, overlay.scale, overlay.scale),
             coord: new Vector3(
               overlay.coordinateX,
               overlay.coordinateY,
@@ -351,7 +356,8 @@
               name: 'POI文字标签',
             },
             id: overlay.id,
-            name: overlay.content,
+            name: this.uniqueName('poi'),
+            autoSize: false,
           });
           await poiOverlay.setClient(diva.client);
           poiOverlay.focus(1000, -Math.PI / 6);
@@ -383,7 +389,7 @@
             },
             backgroundColor: overlay.color,
             opacity: overlay.opacity,
-            scale: overlay.scale,
+            scale: new Vector3(overlay.scale, overlay.scale, overlay.scale),
             coord: new Vector3(
               overlay.coordinateX,
               overlay.coordinateY,
@@ -393,7 +399,8 @@
               name: '文字标签',
             },
             id: overlay.id,
-            name: overlay.title,
+            name: this.uniqueName('marker'),
+            autoSize: false,
           });
           await markerOverlay.setClient(diva.client);
           markerOverlay.focus(1000, -Math.PI / 6);
@@ -424,17 +431,21 @@
               overlay.coordinateY,
               overlay.coordinateZ
             ),
-            rotation: Quaternion.FromEulerAngles(
-              (overlay.rotationX * Math.PI) / 180,
-              (overlay.rotationY * Math.PI) / 180,
-              (overlay.rotationZ * Math.PI) / 180
+            rotation: Quaternion.FromEuler(
+              new Euler(
+                ...deg2rad([
+                  overlay.rotationX,
+                  overlay.rotationY,
+                  overlay.rotationZ,
+                ])
+              )
             ),
             scale: new Vector3(overlay.scale, overlay.scale, overlay.scale),
             resource: {
               name: overlay.icon,
             },
             id: overlay.id,
-            name: overlay.icon,
+            name: this.uniqueName('effect'),
           });
           await emissiveOverlay.setClient(diva.client);
           emissiveOverlay.focus(1000, -Math.PI / 6);
@@ -451,6 +462,9 @@
         reset();
       };
 
+      const uniqueName = (prefix: string): string => {
+        return '' + prefix + '_' + new Date().toISOString();
+      }
 
       /**
        * 删除覆盖物
@@ -514,7 +528,7 @@
        */
       const pickup = async () => {
         const handler = (event: DivaMouseEvent) => {
-          const wordPosition = event.worldPosition;
+          const wordPosition = event.detail.coord;
           corrdinateX.value = wordPosition.x;
           corrdinateY.value = wordPosition.y;
           corrdinateZ.value = wordPosition.z;
