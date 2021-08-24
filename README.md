@@ -1,4 +1,4 @@
-<h1 align="center">DIVA Sample</h1>
+<h1 align="center">DIVA Sample vue3</h1>
 <div align="center">
   <strong>Digital Intelligence Visualization API</strong>
 </div>
@@ -9,7 +9,7 @@
 ## 下载
 
 ```shell
-git clone https://github.com/sheencity/diva-sample-vue
+git clone https://github.com/sheencity/diva-sample-vue3.git
 ```
 
 ## 安装依赖
