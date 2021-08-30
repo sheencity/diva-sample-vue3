@@ -146,8 +146,7 @@
     Emissive,
     Marker,
     Model,
-    POI,
-    POIIcon
+    POI
   } from "@sheencity/diva-sdk";
   import {
     Quaternion,
@@ -356,7 +355,7 @@
               name: 'POI文字标签',
             },
             id: overlay.id,
-            name: this.uniqueName('poi'),
+            name: uniqueName('poi'),
             autoSize: false,
           });
           await poiOverlay.setClient(diva.client);
@@ -399,7 +398,7 @@
               name: '文字标签',
             },
             id: overlay.id,
-            name: this.uniqueName('marker'),
+            name: uniqueName('marker'),
             autoSize: false,
           });
           await markerOverlay.setClient(diva.client);
@@ -445,7 +444,7 @@
               name: overlay.icon,
             },
             id: overlay.id,
-            name: this.uniqueName('effect'),
+            name: uniqueName('effect'),
           });
           await emissiveOverlay.setClient(diva.client);
           emissiveOverlay.focus(1000, -Math.PI / 6);

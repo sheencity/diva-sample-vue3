@@ -143,7 +143,7 @@
       ) => {
         const [model] = await diva.client.getEntitiesByName < Model > (equi.title);
         if (!model || !$event.value ) return;
-        const type = $event.value as RenderingStyleMode;        
+        const type = $event.value as Exclude<RenderingStyleMode, RenderingStyleMode.Hidden>;        
         let code = `model.setRenderingStyleMode(RenderingStyleMode.${
           type.slice(0, 1).toUpperCase() + type.slice(1)
         })`
