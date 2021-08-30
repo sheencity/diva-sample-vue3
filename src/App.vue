@@ -47,42 +47,17 @@
       const backendContainer: Ref = ref(null);
       const _divaSer = diva;
       const isRouter = ref(false);
-      const _changeResolution$ = new Subject < boolean > ();
-      let _subs: Subscription;
       let exampleCode = ref(false);
       onMounted(async () => {
         if (backendContainer) {
           //初始话 webRtc 链接
           await _divaSer.init(backendContainer.value);
-          //  设置服务后端分辨率
-          _updateResolution();
-          // 监听显示区域的改变
-          const resizeObserver = new(window as any).ResizeObserver(() => {
-            _changeResolution$.next(true);
-          });
-          resizeObserver.observe(backendContainer.value);
           isRouter.value = true;
         }
-        _subs = _changeResolution$
-          .pipe(debounceTime(200))
-          .subscribe(_updateResolution);
       });
-
-      const _updateResolution = () => {
-        const width = backendContainer.value.clientWidth;
-        const height = backendContainer.value.clientHeight;
-        _divaSer.client ?.setResolution({
-          width,
-          height,
-        });
-      };
       const showCode = (v)=>{
         exampleCode.value = v;
       }
-      //组件销毁
-      onUnmounted(() => {
-        _subs.unsubscribe();
-      });
       provide("_diva", _divaSer);
       return {
         backendContainer,
