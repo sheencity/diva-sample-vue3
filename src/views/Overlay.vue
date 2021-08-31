@@ -58,8 +58,23 @@
         </div>
       </div>
       <div class="input-item">
-        <span>颜色</span>
-        <input v-model="color" type="color" />
+        <span>颜色</span>        
+        <overlay-color-picker
+          :style="{'color': color}"
+          class="customColorPicker"
+          format="hex"
+          default="#000000"
+          horizontal-align="right"
+          vertical-align="top"
+          :without-alpha="true"
+          :alpha-mode="false"
+          :no-overlap="true"
+          :no-tip="true"
+          :auto-confirm="true"
+          :value="color"
+          :no-cancel-on-outside-click="false"
+          @input-picker-closed="color = $event.target.value"
+        ></overlay-color-picker>
       </div>
       <div class="input-item" v-if="selectedType.value === 'emissiveOverlay'">
         <span>旋转</span>
@@ -88,8 +103,23 @@
         <input-number :min="0" :max="1" v-model="border"></input-number>
       </div>
       <div class="input-item" v-if="selectedType.value === 'Marker'">
-        <span>边框颜色</span>
-        <input v-model="borderColor" type="color" />
+        <span>边框颜色</span>        
+        <overlay-color-picker
+          :style="{'color': borderColor}"
+          class="customColorPicker"
+          format="hex"
+          default="#000000"
+          horizontal-align="right"
+          vertical-align="top"
+          :without-alpha="true"
+          :alpha-mode="false"
+          :no-overlap="true"
+          :no-tip="true"
+          :auto-confirm="true"
+          :value="borderColor"
+          :no-cancel-on-outside-click="false"
+          @input-picker-closed="borderColor = $event.target.value"
+        ></overlay-color-picker>
       </div>
       <div class="input-item" v-if="selectedType.value === 'emissiveOverlay'">
         <span>自发光强度</span>
@@ -129,6 +159,7 @@
   import contentBlock from "@/components/content-block.vue";
   import dropDown from "@/components/dropdown.vue";
   import inputNumber from "@/components/input-number.vue"
+  import OverlayColorPicker from "@fooloomanzoo/color-picker/overlay-color-picker.js";
   import {
     diva,data
   } from "@/global";
@@ -631,7 +662,8 @@
     components: {
       contentBlock,
       dropDown,
-      inputNumber
+      inputNumber,
+      OverlayColorPicker,
     },
   };
 </script>
@@ -867,6 +899,31 @@
       border: 4px solid transparent;
       border-radius: 7px;
     }
+  }
+  .customColorPicker {
+    --input-color: #222;
+    --input-background: #fff;
+    --input-picker-color: #000;
+    --input-picker-background: #dddddd;
+    --input-picker-border-radius: 10px;
+  }
+  overlay-color-picker {
+    width: 57px;
+    height: 26px;
+    border-radius: 2px;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
 
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-color: currentcolor;
+      pointer-events: none;
+    }
   }
 </style>
