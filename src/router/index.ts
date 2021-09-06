@@ -4,8 +4,7 @@ import Scene from '../views/Scene.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Scene",
-    component: Scene,
+    redirect: "/scene",
   },
   {
     path: "/scene",

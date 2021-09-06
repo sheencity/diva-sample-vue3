@@ -57,24 +57,9 @@
           </drop-down>
         </div>
       </div>
-      <div class="input-item">
-        <span>颜色</span>        
-        <overlay-color-picker
-          :style="{'color': color}"
-          class="customColorPicker"
-          format="hex"
-          default="#000000"
-          horizontal-align="right"
-          vertical-align="top"
-          :without-alpha="true"
-          :alpha-mode="false"
-          :no-overlap="true"
-          :no-tip="true"
-          :auto-confirm="true"
-          :value="color"
-          :no-cancel-on-outside-click="false"
-          @input-picker-closed="color = $event.target.value"
-        ></overlay-color-picker>
+      <div class="btn-item">
+        <span>颜色</span>
+        <button id="color" :style="{'background': color, 'borderColor': color}"></button>
       </div>
       <div class="input-item" v-if="selectedType.value === 'emissiveOverlay'">
         <span>旋转</span>
@@ -102,24 +87,9 @@
         <span>边框大小</span>
         <input-number :min="0" :max="1" v-model="border"></input-number>
       </div>
-      <div class="input-item" v-if="selectedType.value === 'Marker'">
+      <div class="btn-item" v-show="selectedType.value === 'Marker'">
         <span>边框颜色</span>        
-        <overlay-color-picker
-          :style="{'color': borderColor}"
-          class="customColorPicker"
-          format="hex"
-          default="#000000"
-          horizontal-align="right"
-          vertical-align="top"
-          :without-alpha="true"
-          :alpha-mode="false"
-          :no-overlap="true"
-          :no-tip="true"
-          :auto-confirm="true"
-          :value="borderColor"
-          :no-cancel-on-outside-click="false"
-          @input-picker-closed="borderColor = $event.target.value"
-        ></overlay-color-picker>
+        <button id="borderColor" :style="{'background': borderColor, 'borderColor': borderColor}"></button>
       </div>
       <div class="input-item" v-if="selectedType.value === 'emissiveOverlay'">
         <span>自发光强度</span>
@@ -158,15 +128,11 @@
 <script lang="ts">
   import contentBlock from "@/components/content-block.vue";
   import dropDown from "@/components/dropdown.vue";
-  import inputNumber from "@/components/input-number.vue"
-  import OverlayColorPicker from "@fooloomanzoo/color-picker/overlay-color-picker.js";
-  import {
-    diva,data
-  } from "@/global";
-
-  import {
-    LocalStorageService
-  } from "@/services/localStorage.service";
+  import inputNumber from "@/components/input-number.vue";
+  import CP from "@taufik-nurrohman/color-picker";
+  
+  import { diva, data } from "@/global";
+  import { LocalStorageService } from "@/services/localStorage.service";
   import {
     onMounted,
     reactive,
@@ -192,20 +158,15 @@
     OverlayType,
     POIIcon,
     POIOverlay,
-  } from '@/models/overlay.model'
-  import {
-    DropdownData
-  } from '@/models/dropdown-data.interface';
-  import {
-    DivaMouseEvent
-  } from '@sheencity/diva-sdk/lib/events/diva.events';
-
-
+  } from '@/models/overlay.model';
+  import { DropdownData } from '@/models/dropdown-data.interface';
+  import { DivaMouseEvent } from '@sheencity/diva-sdk/lib/events/diva.events';
 
   export default {
     setup() {
       let store = new LocalStorageService();
-      let typeOptions = [{
+      let typeOptions = [
+        {
           value: OverlayType.POI,
           placeholder: 'POI'
         },
@@ -218,7 +179,8 @@
           placeholder: 'Effect'
         },
       ];
-      let alignOptions = [{
+      let alignOptions = [
+        {
           value: 'center',
           placeholder: '居中'
         },
@@ -231,7 +193,8 @@
           placeholder: '右对齐'
         },
       ];
-      let iconOptions = [{
+      let iconOptions = [
+        {
           value: POIIcon.Camera,
           placeholder: '摄像头'
         },
@@ -288,7 +251,8 @@
           placeholder: '卫生间'
         },
       ];
-      let emissiveOptions = [{
+      let emissiveOptions = [
+        {
           value: EmissionType.type1,
           placeholder: '悬浮标记01'
         },
@@ -330,7 +294,7 @@
         value: POIIcon.Camera,
         placeholder: '摄像头',
       };
-      let selectedEmissive: DropdownData < EmissionType > = {
+      let selectedEmissive: DropdownData<EmissionType> = {
         value: EmissionType.type1,
         placeholder: '悬浮标记01',
       };
@@ -344,8 +308,8 @@
       let rotationX = ref(0);
       let rotationY = ref(0);
       let rotationZ = ref(0);
-      let scale: Ref < number > = ref(1.0);
-      let opacity: Ref < number > = ref(1.0);
+      let scale: Ref<number> = ref(1.0);
+      let opacity: Ref<number> = ref(1.0);
       let border = ref(0.0);
       let borderColor = ref('#ffffff');
       let selectedId = ref(null);
@@ -354,8 +318,7 @@
       let selectedAlign = {
         value: 'center',
         placeholder: '居中',
-      }as {value: 'left' | 'right' | 'center';placeholder: string;};
-
+      } as { value: 'left' | 'right' | 'center'; placeholder: string; };
 
       /**
        * 创建覆盖物
@@ -511,7 +474,6 @@
         })
       }
 
-
       /**
        * 创建覆盖物之后重置所有配置
        */
@@ -549,7 +511,7 @@
        */
       const selectOverlay = async (overlay: POIOverlay | MarkerOverlay | EmissiveOverlay) => {
         selectedId = overlay.id;
-        const entity = await diva.client.getEntityById < Model > (overlay.id);
+        const entity = await diva.client.getEntityById<Model>(overlay.id);
         entity.focus(1000, -Math.PI / 6);
         data.changeCode(`model.focus(1000, -Math.PI / 6)`);
       }
@@ -578,19 +540,35 @@
         $event.stopPropagation();
       }
 
-
       onMounted(async () => {
         store.getAllOverlays().forEach(e => {
           overlays.push(e);
         })
-        await diva.client ?.applyScene('覆盖物');
+        await diva.client?.applyScene('覆盖物');
         data.changeCode(`client.applyScene('覆盖物')`);
         overlays.map(async (overlay) => {
-          const entity = await diva.client.getEntityById < Model > (overlay.id);
+          const entity = await diva.client.getEntityById<Model>(overlay.id);
           entity.setVisibility(true);
         });
 
-      });
+        initColorPicker();
+      })
+
+      const initColorPicker = () => {
+        // 颜色
+        const colorEle: HTMLElement = document.querySelector('button[id="color"]');
+        const colorPicker = new CP(colorEle);
+        colorPicker.on('change', (r, g, b) => {
+          color.value = CP.HEX([r, g, b]);
+        });
+        // 边框颜色
+        const borderColEle: HTMLElement = document.querySelector('button[id="borderColor"]');
+        const borderCp = new CP(borderColEle);
+        borderCp.on('change', (r, g, b) => {
+          borderColor.value = CP.HEX([r, g, b]);
+        });
+      };
+
       const setSelectedType = (item) => {
         selectedType.value = item.value;
         selectedType.placeholder = item.placeholder;
@@ -663,7 +641,6 @@
       contentBlock,
       dropDown,
       inputNumber,
-      OverlayColorPicker,
     },
   };
 </script>
@@ -907,23 +884,14 @@
     --input-picker-background: #dddddd;
     --input-picker-border-radius: 10px;
   }
-  overlay-color-picker {
-    width: 57px;
-    height: 26px;
-    border-radius: 2px;
-    display: inline-block;
-    overflow: hidden;
-    position: relative;
 
-    &::after {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      background-color: currentcolor;
-      pointer-events: none;
+  .color-picker {
+    left: unset !important;
+    right: 80px !important;
+    border-radius: 3px;
+    overflow: hidden;
+    .color-picker\:a {
+      display: none;
     }
   }
 </style>

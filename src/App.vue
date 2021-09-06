@@ -29,19 +29,10 @@
     provide,
     ref,
     onMounted,
-    Ref,
-    onUnmounted
+    Ref
   } from "vue";
-  import {
-    Subject,
-    Subscription
-  } from "rxjs";
-  import {
-    debounceTime
-  } from "rxjs/operators";
-  import {
-    diva
-  } from "@/global";
+  import { diva } from "@/global";
+
   export default {
     setup() {
       const backendContainer: Ref = ref(null);

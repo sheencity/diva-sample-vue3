@@ -16,7 +16,6 @@
 
 <script lang="ts">
   import {
-    onMounted,
     reactive,
     ref
   } from "@vue/runtime-core";
@@ -45,9 +44,6 @@
         placeholder: props.initvalue.placeholder,
       });
 
-      onMounted(async () => {
-
-      });
       const onClick = () => {
         if (disable.value) {
           return;
