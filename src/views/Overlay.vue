@@ -923,5 +923,10 @@
     right: 0;
     top: 25px;
     z-index: 99;
+    .vc-input__label {
+      color: #222 !important;
+      font-weight: unset !important;
+      line-height: unset !important;
+    }
   }
 </style>
