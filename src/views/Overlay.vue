@@ -59,7 +59,16 @@
       </div>
       <div class="btn-item">
         <span>颜色</span>
-        <button id="color" :style="{'background': color, 'borderColor': color}"></button>
+        <button
+          @click="toggleColorPicker"
+          :style="{'background': color, 'borderColor': color}"
+        ></button>
+        <sketch
+          v-show="colorShow"
+          :modelValue="color"
+          @update:modelValue="color = $event.hex"
+          @click="prevent"
+        ></sketch>
       </div>
       <div class="input-item" v-if="selectedType.value === 'emissiveOverlay'">
         <span>旋转</span>
@@ -89,7 +98,16 @@
       </div>
       <div class="btn-item" v-show="selectedType.value === 'Marker'">
         <span>边框颜色</span>        
-        <button id="borderColor" :style="{'background': borderColor, 'borderColor': borderColor}"></button>
+        <button
+          @click="toggleBorColPicker"
+          :style="{'background': borderColor, 'borderColor': borderColor}"
+        ></button>
+        <sketch
+          v-show="borderColShow"
+          :modelValue="borderColor"
+          @update:modelValue="borderColor = $event.hex"
+          @click="prevent"
+        ></sketch>
       </div>
       <div class="input-item" v-if="selectedType.value === 'emissiveOverlay'">
         <span>自发光强度</span>
@@ -129,12 +147,13 @@
   import contentBlock from "@/components/content-block.vue";
   import dropDown from "@/components/dropdown.vue";
   import inputNumber from "@/components/input-number.vue";
-  import CP from "@taufik-nurrohman/color-picker";
+  import { Sketch } from "@ckpack/vue-color";
   
   import { diva, data } from "@/global";
   import { LocalStorageService } from "@/services/localStorage.service";
   import {
     onMounted,
+    onUnmounted,
     reactive,
     Ref,
     ref
@@ -319,6 +338,28 @@
         value: 'center',
         placeholder: '居中',
       } as { value: 'left' | 'right' | 'center'; placeholder: string; };
+      let colorShow = ref(false);
+      let borderColShow = ref(false);
+
+      const toggleColorPicker = ($event: MouseEvent) => {
+        prevent($event);
+        colorShow.value = !colorShow.value;
+        borderColShow.value = false;
+      };
+
+      const toggleBorColPicker = ($event: MouseEvent) => {
+        prevent($event);
+        borderColShow.value = !borderColShow.value;
+        colorShow.value = false;
+      };
+
+      /**
+       * 阻止默认点击事件
+       */
+      const prevent = ($event: MouseEvent) => {
+        $event.preventDefault();
+        $event.stopPropagation();
+      };
 
       /**
        * 创建覆盖物
@@ -551,23 +592,15 @@
           entity.setVisibility(true);
         });
 
-        initColorPicker();
-      })
+        window.addEventListener('click', ($event) => {
+          colorShow.value = false;
+          borderColShow.value = false;
+        });
+      });
 
-      const initColorPicker = () => {
-        // 颜色
-        const colorEle: HTMLElement = document.querySelector('button[id="color"]');
-        const colorPicker = new CP(colorEle);
-        colorPicker.on('change', (r, g, b) => {
-          color.value = CP.HEX([r, g, b]);
-        });
-        // 边框颜色
-        const borderColEle: HTMLElement = document.querySelector('button[id="borderColor"]');
-        const borderCp = new CP(borderColEle);
-        borderCp.on('change', (r, g, b) => {
-          borderColor.value = CP.HEX([r, g, b]);
-        });
-      };
+      onUnmounted(() => {
+        window.removeEventListener('click', ($event) => {});
+      })
 
       const setSelectedType = (item) => {
         selectedType.value = item.value;
@@ -634,13 +667,19 @@
         selectedType,
         setSelectedAlign,
         setSelectedEmissive,
-        setSelectedIcon
+        setSelectedIcon,
+        colorShow,
+        borderColShow,
+        toggleColorPicker,
+        toggleBorColPicker,
+        prevent,
       };
     },
     components: {
       contentBlock,
       dropDown,
       inputNumber,
+      Sketch,
     },
   };
 </script>
@@ -793,6 +832,7 @@
         display: flex;
         margin-top: 12px;
         justify-content: space-between;
+        position: relative;
 
         span {
           line-height: 24px;
@@ -877,21 +917,11 @@
       border-radius: 7px;
     }
   }
-  .customColorPicker {
-    --input-color: #222;
-    --input-background: #fff;
-    --input-picker-color: #000;
-    --input-picker-background: #dddddd;
-    --input-picker-border-radius: 10px;
-  }
 
-  .color-picker {
-    left: unset !important;
-    right: 80px !important;
-    border-radius: 3px;
-    overflow: hidden;
-    .color-picker\:a {
-      display: none;
-    }
+  .vc-sketch {
+    position: absolute;
+    right: 0;
+    top: 25px;
+    z-index: 99;
   }
 </style>
