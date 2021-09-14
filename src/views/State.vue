@@ -78,12 +78,24 @@
               placeholder: "半透",
             };
             break;
-          case RenderingStyleMode.Hidden:
+          case RenderingStyleMode.Highlight:
             selected = {
-              value: RenderingStyleMode.Hidden,
-              placeholder: "隐藏"
+              value: RenderingStyleMode.Highlight,
+              placeholder: '高亮',
             };
             break;
+          case RenderingStyleMode.Emission:
+            selected = {
+              value: RenderingStyleMode.Emission,
+              placeholder: '自发光'
+            };
+            break;
+          // case RenderingStyleMode.Hidden:
+          //   selected = {
+          //     value: RenderingStyleMode.Hidden,
+          //     placeholder: "隐藏"
+          //   };
+          //   break;
           default:
             selected = {
               value: RenderingStyleMode.Default,
@@ -110,9 +122,17 @@
           placeholder: "半透"
         },
         {
-          value: RenderingStyleMode.Hidden,
-          placeholder: "隐藏"
+          value: RenderingStyleMode.Highlight,
+          placeholder: '高亮'
         },
+        {
+          value: RenderingStyleMode.Emission,
+          placeholder: '自发光'
+        }
+        // {
+        //   value: RenderingStyleMode.Hidden,
+        //   placeholder: "隐藏"
+        // },
       ] as DropdownData < RenderingStyleMode > [];
 
       const onChange = async (
@@ -122,21 +142,36 @@
         $event: DropdownData
       ) => {
         const [model] = await diva.client.getEntitiesByName < Model > (equi.title);
-        if (!model) return;
-        const type = $event.value as RenderingStyleMode;
-        model.setRenderingStyleMode(type);
-
-        data.changeCode(
-          `model.setRenderingStyleMode(RenderingStyleMode.${
+        if (!model || !$event.value ) return;
+        const type = $event.value as Exclude<RenderingStyleMode, RenderingStyleMode.Hidden>;        
+        let code = `model.setRenderingStyleMode(RenderingStyleMode.${
           type.slice(0, 1).toUpperCase() + type.slice(1)
         })`
-        );
+        if (type === RenderingStyleMode.Emission) {
+          model.setRenderingStyleMode(type, {
+            color: "#20fdfa99",
+            strength: 0.2,
+          });
+          code += `, { color: '#20fdfa99', strength: 0.2 })`;
+        } else {
+          model.setRenderingStyleMode(type);
+          code += `)`;
+        }
+        data.changeCode(code);
       };
 
       onMounted(async () => {
         diva.client ?.applyScene("状态演示").then(() => {
           data.changeCode(`client.applyScene('状态演示')`);
         });
+        const highlightStyleOpt = {
+          color: '#20fdfa99',
+          border: {
+            color: '#20fdfa',
+            width: 2,
+          },
+        }
+        diva.client.setHighlightStyle(highlightStyleOpt);
       });
 
       onUnmounted(() => {
