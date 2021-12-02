@@ -4,7 +4,7 @@
       <input type="text" class="placeholder" :disabled="disable" :value="placeholder" readonly @blur="onBlur($event)"
         @keydown='$event.preventDefault();' @click="onClick()">
       <img class="arrow-down" :class="{'activity':!hideOptions}" width="9" height="6"
-        :src="disable? require('../assets/arrow-down-disabled.svg') : require('../assets/arrow-down.svg')" />
+        :src="disable? '/src/assets/arrow-down-disabled.svg' : '/src/assets/arrow-down.svg'" />
     </p>
     <ul class="option" :style="{height: (!hideOptions ? 'auto':'0px')}">
       <li v-for="item in items" :key="item.value" class="dropdown-item" :title="item.placeholder"
