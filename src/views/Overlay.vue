@@ -111,9 +111,9 @@
       <div class="scroll">
         <div v-for="overlay in overlays" :key="overlay.id" class="overlay-list" @click="selectOverlay(overlay)">
           <div class="overlay-item" :class="{'selected': selectedId === overlay.id}">
-            <span>{{overlay.type === 'poi' ? overlay.content : overlay.type === 'label' ? overlay.title : overlay.icon}}</span>
+            <span>{{overlay.type === 'poi' ? overlay.content : overlay.type === 'Marker' ? overlay.title : overlay.icon}}</span>
             <div class="overlay-info">
-              <span>{{overlay.type === 'poi' ? 'POI' : overlay.type === 'label' ? '标签' : 'Emissive'}}</span>
+              <span>{{overlay.type === 'poi' ? 'POI' : overlay.type === 'Marker' ? 'Marker' : 'Emissive'}}</span>
               <div class="overlay-delete" @click="del($event, overlay)">
                 <img src="../assets/icon/overlay/delete.png" />
               </div>
@@ -184,7 +184,7 @@
         },
         {
           value: OverlayType.Emissive,
-          placeholder: 'Effect'
+          placeholder: 'Emissive'
         },
       ];
       let alignOptions = [{
