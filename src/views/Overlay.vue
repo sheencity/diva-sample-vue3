@@ -323,7 +323,7 @@
       let corrdinateZ = ref(0.0);
       let title = ref('');
       let content = ref('');
-      let color = ref('#000000');
+      let color = ref('#ff0000');
       let rotationX = ref(0);
       let rotationY = ref(0);
       let rotationZ = ref(0);
@@ -539,7 +539,7 @@
         rotationZ.value = 0;
         title.value = '';
         content.value = '';
-        color.value = '#000000';
+        color.value = '#ff0000';
         scale.value = 1.0;
         opacity.value = 1.0;
         border.value = 0.0;
