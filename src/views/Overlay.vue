@@ -11,7 +11,7 @@
       </div>
       <div class="btn-item">
         <span>坐标拾取</span>
-        <button @click="pickup">拾取</button>
+        <button @click.stop="pickup" @mouseup.stop="mouseupStop">拾取</button>
       </div>
       <div class="input-item">
         <span>坐标</span>
@@ -525,7 +525,7 @@
       /**
        * 拾取世界坐标
        */
-      const pickup = async () => {
+      const pickup = (e) => {
         const handler = (event: DivaMouseEvent) => {
           const wordPosition = event.detail.coord;
           corrdinateX.value = wordPosition.x;
@@ -533,11 +533,13 @@
           corrdinateZ.value = wordPosition.z;
           document.body.style.cursor = 'default';
         };
-        await diva.client.addEventListener('click', handler, {
+        document.body.style.cursor = 'crosshair';
+        diva.client.addEventListener('click', handler, {
           once: true
         });
-        document.body.style.cursor = 'crosshair';
       }
+
+      const mouseupStop = () => {}
 
       /**
        * 阻止事件冒泡
