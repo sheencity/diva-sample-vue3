@@ -5,7 +5,7 @@
       <div class="content" @click="switchSeason(season)">
         <div class="title">{{ season.title }}</div>
         <div class="icon">
-          <img :src="require(`../assets/icon/date/${season.name}.png`)" />
+          <img :src="`/src/assets/icon/date/${season.name}.png`" />
         </div>
       </div>
     </div>
@@ -15,7 +15,7 @@
         <div class="content" @click="switchNoon(noon)">
           <div class="title">{{ noon.title }}</div>
           <div class="icon">
-            <img :src="require(`../assets/icon/date/${noon.name}.png`)" />
+            <img :src="`/src/assets/icon/date/${noon.name}.png`" />
           </div>
         </div>
       </div>

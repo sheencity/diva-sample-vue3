@@ -14,7 +14,7 @@
 
 <script lang="ts">
   import switcher from "@/components/switcher.vue";
-import { ref, watch } from '@vue/runtime-core';
+  import { ref, watch } from '@vue/runtime-core';
 
   export default{
     setup(props, context){

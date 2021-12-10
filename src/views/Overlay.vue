@@ -11,7 +11,7 @@
       </div>
       <div class="btn-item">
         <span>坐标拾取</span>
-        <button @click="pickup">拾取</button>
+        <button @click.stop="pickup" @mouseup.stop="mouseupStop">拾取</button>
       </div>
       <div class="input-item">
         <span>坐标</span>
@@ -111,9 +111,9 @@
       <div class="scroll">
         <div v-for="overlay in overlays" :key="overlay.id" class="overlay-list" @click="selectOverlay(overlay)">
           <div class="overlay-item" :class="{'selected': selectedId === overlay.id}">
-            <span>{{overlay.type === 'poi' ? overlay.content : overlay.type === 'label' ? overlay.title : overlay.icon}}</span>
+            <span>{{overlay.type === 'poi' ? overlay.content : overlay.type === 'Marker' ? overlay.title : overlay.icon}}</span>
             <div class="overlay-info">
-              <span>{{overlay.type === 'poi' ? 'POI' : overlay.type === 'label' ? '标签' : 'Emissive'}}</span>
+              <span>{{overlay.type === 'poi' ? 'POI' : overlay.type === 'Marker' ? 'Marker' : 'Emissive'}}</span>
               <div class="overlay-delete" @click="del($event, overlay)">
                 <img src="../assets/icon/overlay/delete.png" />
               </div>
@@ -184,7 +184,7 @@
         },
         {
           value: OverlayType.Emissive,
-          placeholder: 'Effect'
+          placeholder: 'Emissive'
         },
       ];
       let alignOptions = [{
@@ -309,7 +309,7 @@
       let corrdinateZ = ref(0.0);
       let title = ref('');
       let content = ref('');
-      let color = ref('#000000');
+      let color = ref('#ff0000');
       let rotationX = ref(0);
       let rotationY = ref(0);
       let rotationZ = ref(0);
@@ -505,7 +505,7 @@
         rotationZ.value = 0;
         title.value = '';
         content.value = '';
-        color.value = '#000000';
+        color.value = '#ff0000';
         scale.value = 1.0;
         opacity.value = 1.0;
         border.value = 0.0;
@@ -525,7 +525,7 @@
       /**
        * 拾取世界坐标
        */
-      const pickup = async () => {
+      const pickup = (e) => {
         const handler = (event: DivaMouseEvent) => {
           const wordPosition = event.detail.coord;
           corrdinateX.value = wordPosition.x;
@@ -533,11 +533,13 @@
           corrdinateZ.value = wordPosition.z;
           document.body.style.cursor = 'default';
         };
-        await diva.client.addEventListener('click', handler, {
+        document.body.style.cursor = 'crosshair';
+        diva.client.addEventListener('click', handler, {
           once: true
         });
-        document.body.style.cursor = 'crosshair';
       }
+
+      const mouseupStop = () => {}
 
       /**
        * 阻止事件冒泡

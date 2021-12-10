@@ -5,7 +5,7 @@
       <div class="content" @click="switchWeather(weather)">
         <div class="title">{{weather.title}}</div>
         <div class="icon">
-          <img :src="require(`../assets/icon/weather/${weather.typeName}.png`)" />
+          <img :src="`/src/assets/icon/weather/${weather.typeName}.png`" />
           <!-- <img src="../assets/icon/weather/default.png" /> -->
         </div>
       </div>

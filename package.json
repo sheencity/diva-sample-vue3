@@ -1,42 +1,33 @@
 {
   "name": "diva-sample-vue3",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "scripts": {
     "start": "npm run serve",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "build:prod": "vue-cli-service build --mode production",
-    "build:test": "vue-cli-service build --mode test",
-    "lint": "vue-cli-service lint"
+    "serve": "vite",
+    "build": "vue-tsc --noEmit && vite build"
   },
   "dependencies": {
-    "@sheencity/diva-sdk": "^0.3.0",
+    "@sheencity/diva-sdk": "^0.3.1",
     "core-js": "^3.6.5",
-    "rxjs": "~6.6.0",
-    "socket.io-client": "^4.1.2",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.28.2",
-    "@typescript-eslint/parser": "^4.28.2",
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-typescript": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/compiler-sfc": "^3.0.0",
+    "@types/webpack-env": "^1.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "@vitejs/plugin-vue": "^1.9.4",
     "@vue/eslint-config-prettier": "^6.0.0",
-    "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-vue": "^7.13.0",
-    "prettier": "^2.2.1",
+    "@vue/eslint-config-typescript": "^9.1.0",
+    "eslint": "^8.3.0",
     "sass": "^1.43.4",
-    "sass-loader": "^7.3.1",
-    "typescript": "~4.1.5"
+    "sass-loader": "^12.3.0",
+    "typescript": "^4.4.4",
+    "uuid": "^8.3.2",
+    "vite": "^2.6.13",
+    "vue-tsc": "^0.29.8"
   },
   "eslintConfig": {
     "root": true,
