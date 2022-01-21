@@ -11,7 +11,7 @@
         </nav>
         <div class="router">
           <div>
-            <router-view v-if="isRouter"/>
+            <router-view></router-view>
           </div>
         </div>
          <div class="codeView" v-show="exampleCode">
@@ -22,9 +22,7 @@
   </div>
 </template>
 <script lang="ts">
-  import sHeader from "@/components/header.vue";
-  import sNav from "@/components/nav.vue";
-  import codeView from "@/components/code-view.vue";
+  import { WebRtcAdapter } from '@sheencity/diva-sdk-adapter';
   import {
     provide,
     ref,
@@ -32,22 +30,18 @@
     Ref,
     onUnmounted
   } from "vue";
-  import {
-    Subject,
-    Subscription
-  } from "rxjs";
-  import {
-    debounceTime
-  } from "rxjs/operators";
-  import {
-    diva
-  } from "@/global";
+  import { Subject, Subscription } from "rxjs";
+  import { debounceTime } from "rxjs/operators";
+  import sHeader from "@/components/header.vue";
+  import sNav from "@/components/nav.vue";
+  import codeView from "@/components/code-view.vue";
+  import { diva } from "@/global";
+
   export default {
     setup() {
       const backendContainer: Ref = ref(null);
       const _divaSer = diva;
-      const isRouter = ref(false);
-      const _changeResolution$ = new Subject < boolean > ();
+      const _changeResolution$ = new Subject<boolean>();
       let _subs: Subscription;
       let exampleCode = ref(false);
       onMounted(async () => {
@@ -61,7 +55,6 @@
             _changeResolution$.next(true);
           });
           resizeObserver.observe(backendContainer.value);
-          isRouter.value = true;
         }
         _subs = _changeResolution$
           .pipe(debounceTime(200))
@@ -69,12 +62,11 @@
       });
 
       const _updateResolution = () => {
-        const width = backendContainer.value.clientWidth;
-        const height = backendContainer.value.clientHeight;
-        _divaSer.client ?.setResolution({
-          width,
-          height,
-        });
+        if (_divaSer.adapter instanceof WebRtcAdapter) {
+          const width = backendContainer.value.clientWidth;
+          const height = backendContainer.value.clientHeight;
+          _divaSer.client ?.setResolution({ width, height });
+        }
       };
       const showCode = (v)=>{
         exampleCode.value = v;
@@ -86,7 +78,6 @@
       provide("_diva", _divaSer);
       return {
         backendContainer,
-        isRouter,
         exampleCode,
         showCode
       };

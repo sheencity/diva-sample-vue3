@@ -1,11 +1,9 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Scene from '../views/Scene.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    name: "Scene",
-    component: Scene,
+    path: "",
+    redirect: "/scene",
   },
   {
     path: "/scene",
@@ -78,7 +76,7 @@ const routes: Array<RouteRecordRaw> = [
     name: "Overlay",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/Overlay.vue"),
-  }
+  },
 ];
 
 const router = createRouter({

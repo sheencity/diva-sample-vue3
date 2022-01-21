@@ -29,23 +29,14 @@
 </template>
 
 <script lang="ts">
-  import contentBlock from '@/components/content-block.vue'
-  import {
-    diva,data
-  } from '@/global'
-  import {
-    onMounted,
-    onUnmounted,
-  } from 'vue'
-  import {
-    Model,
-    RenderingStyleMode
-  } from '@sheencity/diva-sdk';
-
+  import { Model, RenderingStyleMode } from '@sheencity/diva-sdk';
+  import { onMounted, onUnmounted } from 'vue';
+  import contentBlock from '@/components/content-block.vue';
+  import { diva, data } from '@/global';
 
   export default {
-
     setup() {
+      // 监控设备
       let monitors = [{
           title: '测试设备01',
           url: 'rtmp://xxxxxxxxxxxxxxxxxx',
@@ -54,17 +45,7 @@
           title: '测试设备02',
           url: 'rtmp://xxxxxxxxxxxxxxxxxx',
         },
-        {
-          title: '测试设备03',
-          url: 'https://www.sheencity.com',
-        },
-        {
-          title: '测试设备04',
-          url: 'https://www.sheencity.com',
-        }
       ];
-      // 监控设备
-      monitors = monitors.slice(0, 2);
       // 弹窗设备
       let monitorEquis = [{
           title: '测试设备03',
@@ -73,15 +54,17 @@
         {
           title: '测试设备04',
           url: 'https://www.sheencity.com',
-        }
+        },
       ];
       // 存放各个设备对应的 model 对象
-      let models: Map < string, Model > ;
+      let models: Map<string, Model> = new Map();
       // 事件句柄列表
-      let monitorHandlers: Array < () => any > ;
+      let monitorHandlers: Array<() => any> = [];
+      // 存在弹窗的模型
+      let widgetModel: Model = null;
 
-      const removeWidget = async (name: string) => {
-        await (await getModelByName(name)).setWebWidget(null);
+      const removeWidget = async () => {
+        if (widgetModel) await widgetModel.setWebWidget(null);
       }
       const setWidget = async (monitor: string | Model, url: string) => {
         if (typeof monitor === 'string') {
@@ -94,15 +77,16 @@
           mouseInput: true,
           keyboardInput: true,
         });
+        widgetModel = monitor;
         data.changeCode(
           `model.setWebWidget(new URL('${url}'), { width: 500, height: 280, mouseInput: true, keyboardInput: true })`
         );
       }
       const refresh = async (monitorEqui: {
-        title: string;url: string
+        title: string; url: string
       }) => {
         try {
-          await removeWidget(monitorEqui.title);
+          await removeWidget();
         } catch (e) {
           console.log('当前模型无可清除的 web 组件');
         }
@@ -110,17 +94,17 @@
       }
 
       const selectMonitor = async (name: string) => {
-        await (await getModelByName(name)).focus(1000, -Math.PI / 6);
-        data.changeCode(`model.focus(1000, -Math.PI / 6)`);
+        await (await getModelByName(name)).focus(1000, - Math.PI / 6);
+        data.changeCode(`model.focus(1000, - Math.PI / 6)`);
       }
 
       const getModelByName = async (name: string) => {
-        let m = models.get(name);
-        if (!m) {
-          m = (await diva.client.getEntitiesByName < Model > (name))[0];
-          models.set(name, m);
+        let model = models.get(name);
+        if (!model) {
+          model = (await diva.client.getEntitiesByName < Model > (name))[0];
+          models.set(name, model);
         }
-        return m;
+        return model;
       }
 
       const stopPropagation = ($event) => {
@@ -128,32 +112,14 @@
       }
 
       onMounted(async () => {
-        const monitors = [{
-            title: '测试设备01',
-            url: 'rtmp://xxxxxxxxxxxxxxxxxx',
-          },
-          {
-            title: '测试设备02',
-            url: 'rtmp://xxxxxxxxxxxxxxxxxx',
-          },
-          {
-            title: '测试设备03',
-            url: 'https://www.sheencity.com',
-          },
-          {
-            title: '测试设备04',
-            url: 'https://www.sheencity.com',
-          }
-        ];
+        const totalMonitors = monitors.concat(monitorEquis);
         diva.client.applyScene('监控设备').then(() => {
           data.changeCode(`client.applyScene('监控设备')`);
         });
-        models = new Map();
-        monitorHandlers = [];
-        for (let i = 0; i < monitors.length; i++) {
-          const model = await getModelByName(monitors[i].title);
+        for (let i = 0; i < totalMonitors.length; i++) {
+          const model = await getModelByName(totalMonitors[i].title);
           const handle = function () {
-            const url = monitors.find((m) => m.title === this.name).url;
+            const url = totalMonitors.find((m) => m.title === this.name).url;
             setWidget(this as Model, url);
           };
           model.setRenderingStyleMode(RenderingStyleMode.Default);
@@ -162,7 +128,8 @@
         }
       });
 
-      onUnmounted(() => {
+      onUnmounted(async () => {
+        await removeWidget();
         monitors.forEach(async (m, i) => {
           const model = await getModelByName(m.title);
           model.removeEventListener('click', monitorHandlers[i]);

@@ -128,14 +128,9 @@
 <script lang="ts">
   import contentBlock from "@/components/content-block.vue";
   import dropDown from "@/components/dropdown.vue";
-  import inputNumber from "@/components/input-number.vue"
-  import {
-    diva,data
-  } from "@/global";
-
-  import {
-    LocalStorageService
-  } from "@/services/localStorage.service";
+  import inputNumber from "@/components/input-number.vue";
+  import { diva, data } from "@/global";
+  import { LocalStorageService } from "@/services/localStorage.service";
   import {
     onMounted,
     reactive,
@@ -143,6 +138,7 @@
     ref
   } from "vue";
   import {
+    DivaMouseEvent,
     Emissive,
     Marker,
     Model,
@@ -161,15 +157,8 @@
     OverlayType,
     POIIcon,
     POIOverlay,
-  } from '@/models/overlay.model'
-  import {
-    DropdownData
-  } from '@/models/dropdown-data.interface';
-  import {
-    DivaMouseEvent
-  } from '@sheencity/diva-sdk/lib/events/diva.events';
-
-
+  } from '@/models/overlay.model';
+  import { DropdownData } from '@/models/dropdown-data.interface';
 
   export default {
     setup() {
@@ -299,7 +288,7 @@
         value: POIIcon.Camera,
         placeholder: '摄像头',
       };
-      let selectedEmissive: DropdownData < EmissionType > = {
+      let selectedEmissive: DropdownData<EmissionType> = {
         value: EmissionType.type1,
         placeholder: '悬浮标记01',
       };
@@ -313,8 +302,8 @@
       let rotationX = ref(0);
       let rotationY = ref(0);
       let rotationZ = ref(0);
-      let scale: Ref < number > = ref(1.0);
-      let opacity: Ref < number > = ref(1.0);
+      let scale: Ref<number> = ref(1.0);
+      let opacity: Ref<number> = ref(1.0);
       let border = ref(0.0);
       let borderColor = ref('#ffffff');
       let selectedId = ref(null);
@@ -323,8 +312,7 @@
       let selectedAlign = {
         value: 'center',
         placeholder: '居中',
-      }as {value: 'left' | 'right' | 'center';placeholder: string;};
-
+      } as { value: 'left' | 'right' | 'center'; placeholder: string };
 
       /**
        * 创建覆盖物
@@ -471,15 +459,14 @@
       const del = async ($event: Event,overlay: POIOverlay | MarkerOverlay | EmissiveOverlay) => {
         $event.stopPropagation();
         store.deleteOverlay(overlay);
-        const entity = await diva.client.getEntityById(overlay.id);
+        const entity = await diva.client.getEntityById<Model>(overlay.id);
         await entity.setClient(null);
         data.changeCode(`entity.setClient(null)`);
         overlays.length = 0;
         store.getAllOverlays().forEach(e => {
           overlays.push(e);
-        })
+        });
       }
-
 
       /**
        * 创建覆盖物之后重置所有配置
@@ -518,19 +505,16 @@
        */
       const selectOverlay = async (overlay: POIOverlay | MarkerOverlay | EmissiveOverlay) => {
         selectedId = overlay.id;
-        const entity = await diva.client.getEntityById < Model > (overlay.id);
-        entity.focus(1000, -Math.PI / 6);
-        data.changeCode(`model.focus(1000, -Math.PI / 6)`);
+        const entity = await diva.client.getEntityById<Model>(overlay.id);
+        entity.focus(1000, - Math.PI / 6);
+        data.changeCode(`model.focus(1000, - Math.PI / 6)`);
       }
       /**
        * 拾取世界坐标
        */
       const pickup = (e) => {
         const handler = (event: DivaMouseEvent) => {
-          const wordPosition = event.detail.coord;
-          corrdinateX.value = wordPosition.x;
-          corrdinateY.value = wordPosition.y;
-          corrdinateZ.value = wordPosition.z;
+          [corrdinateX.value, corrdinateY.value, corrdinateZ.value] = event.detail.coord;
           document.body.style.cursor = 'default';
         };
         document.body.style.cursor = 'crosshair';
@@ -549,18 +533,16 @@
         $event.stopPropagation();
       }
 
-
       onMounted(async () => {
         store.getAllOverlays().forEach(e => {
           overlays.push(e);
         })
-        await diva.client ?.applyScene('覆盖物');
+        await diva.client?.applyScene('覆盖物');
         data.changeCode(`client.applyScene('覆盖物')`);
         overlays.map(async (overlay) => {
-          const entity = await diva.client.getEntityById < Model > (overlay.id);
+          const entity = await diva.client.getEntityById<Model>(overlay.id);
           entity.setVisibility(true);
         });
-
       });
       const setSelectedType = (item) => {
         selectedType.value = item.value;
@@ -578,7 +560,6 @@
         selectedIcon.value = item.value;
         selectedIcon.placeholder = item.placeholder;
       };
-
 
       return {
         typeOptions,
