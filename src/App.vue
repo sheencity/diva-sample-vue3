@@ -22,7 +22,7 @@
   </div>
 </template>
 <script lang="ts">
-  import { WebRtcAdapter } from '@sheencity/diva-sdk-adapter';
+  import { WebRtcAdapter } from '@sheencity/diva-sdk-core';
   import {
     provide,
     ref,

@@ -1,9 +1,9 @@
 import { Diva, DivaClient } from '@sheencity/diva-sdk';
-import { Adapter, CefAdapter, WebRtcAdapter } from '@sheencity/diva-sdk-adapter';
+import { Adapter, CefAdapter, WebRtcAdapter } from '@sheencity/diva-sdk-core';
 
 export class DivaService {
   #client?: DivaClient;
-  adapter: Adapter;
+  adapter: WebRtcAdapter | CefAdapter;
 
   public get client() {
     if (!this.#client) new Error('diva client is not initialized');
@@ -17,12 +17,10 @@ export class DivaService {
   public async init(container: HTMLDivElement) {
     console.log({ container });
     const apiKey = '<replace_your_api_key_here>';
-    const adapter: Adapter = /Mars/.test(globalThis.navigator.userAgent)
+    this.adapter = /Mars/.test(globalThis.navigator.userAgent)
       ? new CefAdapter(container) // 使用内嵌模式
       : new WebRtcAdapter(container, new URL('ws://127.0.0.1:3000')); // 使用云渲染模式
-    this.adapter = adapter;
-    const diva = new Diva({ apiKey, adapter });
-
+    const diva = new Diva({ apiKey, adapter: this.adapter });
     console.log('diva is', diva);
     this.#client = await diva.init();
     console.log('client is', this.#client);
