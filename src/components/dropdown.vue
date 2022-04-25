@@ -4,7 +4,7 @@
       <input type="text" class="placeholder" :disabled="disable" :value="placeholder" readonly @blur="onBlur($event)"
         @keydown='$event.preventDefault();' @click="onClick()">
       <img class="arrow-down" :class="{'activity':!hideOptions}" width="9" height="6"
-        :src="disable? '/src/assets/arrow-down-disabled.svg' : '/src/assets/arrow-down.svg'" />
+        :src="disable? getAssetsFile('arrow-down-disabled.svg') : getAssetsFile('arrow-down.svg')" />
     </p>
     <ul class="option" :style="{height: (!hideOptions ? 'auto':'0px')}">
       <li v-for="item in items" :key="item.value" class="dropdown-item" :title="item.placeholder"
@@ -27,6 +27,7 @@
     toRef,
     toRefs
   } from "vue";
+  import getAssetsFile from '@/util/public-use';
 
   export default {
     props: {
@@ -45,9 +46,6 @@
         placeholder: props.initvalue.placeholder,
       });
 
-      onMounted(async () => {
-
-      });
       const onClick = () => {
         if (disable.value) {
           return;
@@ -73,6 +71,7 @@
         disable,
         items: options,
         ...toRefs(selectedItem),
+        getAssetsFile,
         // 事件
         onClick,
         menuClick,
