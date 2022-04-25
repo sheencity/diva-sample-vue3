@@ -331,8 +331,10 @@
       //   setexplode(newexplode);
       // })
       return {
+        explode,
         explodef,
         gradationf,
+        pipe,
         pipef,
         gradation,
         options,

@@ -11,7 +11,7 @@
       </div>
       <div class="btn-item">
         <span>坐标拾取</span>
-        <button @click.stop="pickup" @mouseup.stop="mouseupStop">拾取</button>
+        <button @click.stop="pickup" @mouseup.stop>拾取</button>
       </div>
       <div class="input-item">
         <span>坐标</span>
@@ -165,9 +165,6 @@
   import {
     DropdownData
   } from '@/models/dropdown-data.interface';
-  import {
-    DivaMouseEvent
-  } from '@sheencity/diva-sdk/lib/events/diva.events';
 
 
 
@@ -526,7 +523,7 @@
        * 拾取世界坐标
        */
       const pickup = (e) => {
-        const handler = (event: DivaMouseEvent) => {
+        const handler = (event: any) => {
           const wordPosition = event.detail.coord;
           corrdinateX.value = wordPosition.x;
           corrdinateY.value = wordPosition.y;
@@ -538,8 +535,6 @@
           once: true
         });
       }
-
-      const mouseupStop = () => {}
 
       /**
        * 阻止事件冒泡
