@@ -5,7 +5,7 @@
       <div class="content" @click="switchWeather(weather)">
         <div class="title">{{weather.title}}</div>
         <div class="icon">
-          <img :src="`/src/assets/icon/weather/${weather.typeName}.png`" />
+          <img :src="getAssetsFile(`icon/weather/${weather.typeName}.png`)" />
           <!-- <img src="../assets/icon/weather/default.png" /> -->
         </div>
       </div>
@@ -25,6 +25,7 @@
   import {
     WeatherName
   } from "@sheencity/diva-sdk";
+  import getAssetsFile from '@/util/public-use';
 
   export default {
     setup() {
@@ -80,6 +81,7 @@
           },
         ],
         switchWeather,
+        getAssetsFile
       };
     },
     components: {
