@@ -1,11 +1,11 @@
 <template>
   <div class="state-main">
     <content-block caption="设备状态"></content-block>
-    <div class="drop-block" v-for="(equipment,i) in equipments" :key="equipment.title">
-      <div class="drop-item" :class="{'selected':selected === i}">
+    <div class="drop-block" v-for="equipment in equipments" :key="equipment.title">
+      <div class="drop-item" :class="{ 'selected': false }">
         <span>{{equipment.title}}</span>
         <div class="drop-down">
-          <drop-down :options="options" :initvalue="inintval" @select="onChange(equipment, $event)" :disabled="false">
+          <drop-down :options="options" :initvalue="inintval" @select="onChange(equipment, $event as any)" :disabled="false">
           </drop-down>
         </div>
       </div>
@@ -53,7 +53,6 @@
         },
       ];
 
-      let selected = ref(Number);
       const addSelected = (equipment: {
         title: string;
         state: RenderingStyleMode;
@@ -184,7 +183,6 @@
       return {
         equipments,
         options,
-        selected,
         onChange,
         inintval: {
           value: RenderingStyleMode.Default,
