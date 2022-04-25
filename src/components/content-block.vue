@@ -7,18 +7,12 @@
 </template>
 
 <script lang="ts">
-  import {
-    Options,
-    Vue
-  } from "vue-class-component";
-
-  @Options({
+  export default {
     props: {
       caption: String,
       width: Number,
-    },
-  })
-  export default class ContentBlock extends Vue {}
+    }
+  }
 </script>
 
 

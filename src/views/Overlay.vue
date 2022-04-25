@@ -11,7 +11,7 @@
       </div>
       <div class="btn-item">
         <span>坐标拾取</span>
-        <button @click.stop="pickup" @mouseup.stop="mouseupStop">拾取</button>
+        <button @click.stop="pickup" @mouseup.stop>拾取</button>
       </div>
       <div class="input-item">
         <span>坐标</span>
@@ -522,8 +522,6 @@
           once: true
         });
       }
-
-      const mouseupStop = () => {}
 
       /**
        * 阻止事件冒泡
