@@ -5,7 +5,7 @@
       <div class="content" @click="switchSeason(season)">
         <div class="title">{{ season.title }}</div>
         <div class="icon">
-          <img :src="`/src/assets/icon/date/${season.name}.png`" />
+          <img :src="getAssetsFile(`icon/date/${season.name}.png`)" />
         </div>
       </div>
     </div>
@@ -15,7 +15,7 @@
         <div class="content" @click="switchNoon(noon)">
           <div class="title">{{ noon.title }}</div>
           <div class="icon">
-            <img :src="`/src/assets/icon/date/${noon.name}.png`" />
+            <img :src="getAssetsFile(`icon/date/${noon.name}.png`)" />
           </div>
         </div>
       </div>
@@ -51,6 +51,7 @@
   import {
     WeatherName
   } from "@sheencity/diva-sdk";
+  import getAssetsFile from '@/util/public-use';
 
   export default {
     setup() {
@@ -216,6 +217,7 @@
         onTimeChange,
         switchSeason,
         switchNoon,
+        getAssetsFile
       };
     },
     components: {

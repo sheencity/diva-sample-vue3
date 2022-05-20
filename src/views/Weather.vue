@@ -1,11 +1,11 @@
 <template>
   <div class="weather-main">
     <content-block caption="天气切换"></content-block>
-    <div v-for="weather in weathers" :key="weather.index">
+    <div v-for="(weather, index) in weathers" :key="index">
       <div class="content" @click="switchWeather(weather)">
         <div class="title">{{weather.title}}</div>
         <div class="icon">
-          <img :src="`/src/assets/icon/weather/${weather.typeName}.png`" />
+          <img :src="getAssetsFile(`icon/weather/${weather.typeName}.png`)" />
           <!-- <img src="../assets/icon/weather/default.png" /> -->
         </div>
       </div>
@@ -25,6 +25,7 @@
   import {
     WeatherName
   } from "@sheencity/diva-sdk";
+  import getAssetsFile from '@/util/public-use';
 
   export default {
     setup() {
@@ -48,7 +49,7 @@
         //各种场景
         weathers: [{
             title: "默认",
-            typeName: "default",
+            typeName: WeatherName.Default,
           },
           {
             title: "晴天",
@@ -80,6 +81,7 @@
           },
         ],
         switchWeather,
+        getAssetsFile
       };
     },
     components: {

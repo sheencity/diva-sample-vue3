@@ -27,7 +27,7 @@
     },
     setup(props, context) {
       let isOn = ref(props.modelValue);
-      let background: String = "rgba(255, 255, 255, 0.1)";
+      let background = "rgba(255, 255, 255, 0.1)";
       let disable = toRef(props, "disabled");
       // let ballColor = toRef(props,'disabled');
       let label = toRef(props, "label");
