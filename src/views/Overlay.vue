@@ -142,7 +142,8 @@
     Emissive,
     Marker,
     Model,
-    POI
+    POI,
+    POIIcon
   } from "@sheencity/diva-sdk";
   import {
     Quaternion,
@@ -155,7 +156,6 @@
     EmissiveOverlay,
     MarkerOverlay,
     OverlayType,
-    POIIcon,
     POIOverlay,
   } from '@/models/overlay.model';
   import { DropdownData } from '@/models/dropdown-data.interface';
@@ -199,7 +199,7 @@
         },
         {
           value: POIIcon.TrafficLight,
-          placeholder: '红路灯'
+          placeholder: '红绿灯'
         },
         {
           value: POIIcon.TrashCan,
@@ -514,7 +514,7 @@
        */
       const pickup = (e) => {
         const handler = (event: DivaMouseEvent) => {
-          [corrdinateX.value, corrdinateY.value, corrdinateZ.value] = event.detail.coord;
+          [corrdinateX.value, corrdinateY.value, corrdinateZ.value] = event.detail.position;
           document.body.style.cursor = 'default';
         };
         document.body.style.cursor = 'crosshair';
