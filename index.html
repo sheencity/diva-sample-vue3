@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Diva Sample Vue3</title>
     <script>
-      if (window.ue?.diva) {
+      if (window.navigator.userAgent.includes('Mars')) {
         // 内嵌模式下,解决点击异常问题
-        Object.defineProperty(window.navigator, 'userAgent', {value:'firefox/53'});
+        Object.defineProperty(window.navigator, 'userAgent', { value:'firefox/53' });
       }
     </script>
   </head>
