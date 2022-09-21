@@ -256,15 +256,15 @@
       ];
       let iconTypeOptions = [{
           value: POIIconType.type1,
-          placeholder: POIIconType.type1
+          placeholder: 'POI文字标签'
         },
         {
           value: POIIconType.type2,
-          placeholder: POIIconType.type2
+          placeholder: 'POI圆形标签'
         },
         {
           value: POIIconType.type3,
-          placeholder: POIIconType.type3
+          placeholder: 'POI水滴'
         },
       ];
       let emissiveOptions = [{
@@ -311,7 +311,7 @@
       };
       let selectedIconType: DropdownData = {
         value: POIIconType.type1,
-        placeholder: POIIconType.type1,
+        placeholder: 'POI文字标签',
       };
       let selectedEmissive: DropdownData<EmissionType> = {
         value: EmissionType.type1,
@@ -503,7 +503,7 @@
         };
         selectedIconType = {
           value: POIIconType.type1,
-          placeholder: POIIconType.type1,
+          placeholder: 'POI文字标签',
         };
         selectedEmissive = {
           value: EmissionType.type1,
@@ -621,7 +621,7 @@
         iconTypeOptions,
         iconTypeInitial: {
           value: POIIconType.type1,
-          placeholder: POIIconType.type1
+          placeholder: 'POI文字标签'
         },
         iconInintval: {
           value: 'camera',
