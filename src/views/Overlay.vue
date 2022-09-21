@@ -53,6 +53,13 @@
       <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'poi'">
         <span>类型</span>
         <div>
+          <drop-down :options="iconTypeOptions" :initvalue="iconTypeInitial" @select="setSelectedIconType"
+            :disabled="false"></drop-down>
+        </div>
+      </div>
+      <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'poi'">
+        <span>图标</span>
+        <div>
           <drop-down :options="iconOptions" :initvalue="iconInintval" @select="setSelectedIcon" :disabled="false">
           </drop-down>
         </div>
@@ -156,6 +163,7 @@
     EmissiveOverlay,
     MarkerOverlay,
     OverlayType,
+    POIIconType,
     POIOverlay,
   } from '@/models/overlay.model';
   import { DropdownData } from '@/models/dropdown-data.interface';
@@ -246,6 +254,19 @@
           placeholder: '卫生间'
         },
       ];
+      let iconTypeOptions = [{
+          value: POIIconType.type1,
+          placeholder: POIIconType.type1
+        },
+        {
+          value: POIIconType.type2,
+          placeholder: POIIconType.type2
+        },
+        {
+          value: POIIconType.type3,
+          placeholder: POIIconType.type3
+        },
+      ];
       let emissiveOptions = [{
           value: EmissionType.type1,
           placeholder: '悬浮标记01'
@@ -287,6 +308,10 @@
       let selectedIcon: DropdownData = {
         value: POIIcon.Camera,
         placeholder: '摄像头',
+      };
+      let selectedIconType: DropdownData = {
+        value: POIIconType.type1,
+        placeholder: POIIconType.type1,
       };
       let selectedEmissive: DropdownData<EmissionType> = {
         value: EmissionType.type1,
@@ -340,7 +365,7 @@
               overlay.coordinateZ
             ),
             resource: {
-              name: 'POI文字标签',
+              name: selectedIconType.value,
             },
             id: overlay.id,
             name: uniqueName('poi'),
@@ -476,6 +501,10 @@
           value: POIIcon.Camera,
           placeholder: '摄像头',
         };
+        selectedIconType = {
+          value: POIIconType.type1,
+          placeholder: POIIconType.type1,
+        };
         selectedEmissive = {
           value: EmissionType.type1,
           placeholder: '悬浮标记01',
@@ -558,6 +587,11 @@
         selectedIcon.value = item.value;
         selectedIcon.placeholder = item.placeholder;
       };
+      const setSelectedIconType = (item) => {
+        selectedIconType.value = item.value;
+        selectedIconType.placeholder = item.placeholder;
+      };
+      
 
       return {
         typeOptions,
@@ -584,6 +618,11 @@
           placeholder: '悬浮标记01'
         },
         iconOptions,
+        iconTypeOptions,
+        iconTypeInitial: {
+          value: POIIconType.type1,
+          placeholder: POIIconType.type1
+        },
         iconInintval: {
           value: 'camera',
           placeholder: '摄像头'
@@ -606,7 +645,8 @@
         selectedType,
         setSelectedAlign,
         setSelectedEmissive,
-        setSelectedIcon
+        setSelectedIcon,
+        setSelectedIconType
       };
     },
     components: {

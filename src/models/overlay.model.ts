@@ -35,9 +35,16 @@ export class Overlay {
   }
 }
 
+export enum POIIconType {
+  type1 = 'POI文字标签',
+  type2 = 'POI圆形标签',
+  type3 = 'POI水滴',
+}
+
 export class POIOverlay extends Overlay {
   public readonly type = OverlayType.POI;
   public icon: POIIcon;
+  public iconType: POIIconType;
 }
 
 export class MarkerOverlay extends Overlay {
