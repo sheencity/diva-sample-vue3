@@ -17,7 +17,7 @@
         <div class="drop-item">
           <span>聚焦楼层</span>
           <div>
-            <drop-down :options="options" :initvalue="inintval" @select="selectf" :disabled="!gradation"></drop-down>
+            <drop-down v-model="selectedFloor" :options="options" @select="selectf" :disabled="!gradation" />
             <span style="margin-left: 4px;">层</span>
           </div>
         </div>
@@ -38,6 +38,7 @@
   import {
     onMounted,
     onUnmounted,
+    Ref,
     ref
   } from "vue";
   import {
@@ -68,10 +69,10 @@
       // 所有管道模型
       let pipeModels: Model[] = [];
       // 层数
-      let selectedFloor: DropdownData = {
+      let selectedFloor: Ref<DropdownData> = ref({
         placeholder: "1",
         value: "一层-1_1",
-      };
+      });
       // 显示管线
       let pipe = ref(false);
       let group$: Observable < TypedGroup < Model >> ;
@@ -146,13 +147,6 @@
         },
       ]);
 
-      let inintval = {
-        placeholder: "1",
-        value: "一层-1_1",
-        pipeLineName: "一层管线",
-      };
-
-      
       const setexplode = (val: boolean) => {
         if (!group$) return;
         group$.subscribe((group) => {
@@ -178,7 +172,7 @@
       const setgradation = (v: boolean) => {
         if (v) {
           // 聚焦到已选中的层数
-          focusFloor(Number(selectedFloor.placeholder));
+          focusFloor(Number(selectedFloor.value.placeholder));
           setpipe(false);
         } else {
           setVisibility(models, true, true);
@@ -196,7 +190,7 @@
           focusFloor(Number(v.placeholder));
         }
         // 此处设置层数
-        selectedFloor = v;
+        selectedFloor.value = v;
       };
       
       const setpipe = (v: boolean) => {
@@ -208,7 +202,7 @@
         const currentPipe = pipeModels.filter(
           (pipeModel) =>
           pipeModel.name ===
-          options.value[Number(selectedFloor.placeholder) - 1].pipeLineName
+          options.value[Number(selectedFloor.value.placeholder) - 1].pipeLineName
         );
         if (gradation.value && v) {
           setVisibility(currentPipe, true);
@@ -339,7 +333,7 @@
         gradation,
         options,
         selectf,
-        inintval,
+        selectedFloor,
       };
     },
     components: {

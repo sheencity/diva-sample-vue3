@@ -42,7 +42,7 @@
         <div class="drop-item">
           <span>模式</span>
           <div>
-            <drop-down :options="options" :initvalue="inintval" @select="select" :disabled="false"></drop-down>
+            <drop-down v-model="selectedMode" :options="options" @select="select" :disabled="false"></drop-down>
           </div>
         </div>
         <div class="switch-item">
@@ -54,153 +54,160 @@
 </template>
 
 <script lang="ts">
-  import contentBlock from "@/components/content-block.vue";
-  import dropDown from "@/components/dropdown.vue";
-  import switcher from "@/components/switcher.vue";
-  import {
-    diva,data
-  } from "@/global";
+import contentBlock from "@/components/content-block.vue";
+import dropDown from "@/components/dropdown.vue";
+import switcher from "@/components/switcher.vue";
+import {
+  diva, data
+} from "@/global";
 
-  import {
-    onMounted,
-    onUnmounted
-  } from "vue";
-  import {
-    MovementMode
-  } from "@sheencity/diva-sdk";
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+ref
+} from "vue";
+import {
+  MovementMode
+} from "@sheencity/diva-sdk";
+import { DropdownData } from "@/models/dropdown-data.interface";
 
-  export default {
-    setup() {
-      // 罗盘
-      let compass: boolean = false;
-
-      const select = (v) => {
+export default {
+  setup() {
+    // 罗盘
+    let compass: boolean = false;
+    let defaultMode = ref({
+      value: "false",
+      placeholder: "飞行",
+    });
+    const selectedMode = computed({
+      get: function () {
+        return defaultMode.value;
+      },
+      set: function (v: DropdownData) {
+        defaultMode.value = v;
         diva.client.setMovementMode(
           v.value == "true" ? MovementMode.ThirdPerson : MovementMode.Fly
         );
         data.changeCode(
-          `client.setMovementMode(${
-          v.value == "true" ? "MovementMode.ThirdPerson" : "MovementMode.Fly"
-        })`
+          `client.setMovementMode(${v.value == "true" ? "MovementMode.ThirdPerson" : "MovementMode.Fly"
+          })`
         );
-      };
-      const swit = (v) => {
-        compass = v;
-        diva.client.setCompass(v);
-        data.changeCode(`client.setCompass(${v})`);
-      };
+      }
+    })
+    const swit = (v) => {
+      compass = v;
+      diva.client.setCompass(v);
+      data.changeCode(`client.setCompass(${v})`);
+    };
 
-      onMounted(async () => {
-        await diva.client.applyScene("全局配置");
-        compass = data.compass;
-        diva.client.setCompass(compass);
-        data.changeCode(`client.setCompass(${compass})`);
-        setTimeout(() => {
-          data.changeCode(`client.applyScene('全局配置')`);
-        }, 0);
-      });
+    onMounted(async () => {
+      await diva.client.applyScene("全局配置");
+      compass = data.compass;
+      diva.client.setCompass(compass);
+      data.changeCode(`client.setCompass(${compass})`);
+      setTimeout(() => {
+        data.changeCode(`client.applyScene('全局配置')`);
+      }, 0);
+    });
 
-      onUnmounted(() => {
-        diva.client.setMovementMode(MovementMode.Fly);
-      });
+    onUnmounted(() => {
+      diva.client.setMovementMode(MovementMode.Fly);
+    });
 
-      return {
-        options: [{
-            value: "false",
-            placeholder: "飞行",
-          },
-          {
-            value: "true",
-            placeholder: "人视",
-          },
-        ],
-        inintval: {
-          value: "false",
-          placeholder: "飞行",
-        },
-        select,
-        swit,
-      };
-    },
-    components: {
-      contentBlock,
-      dropDown,
-      switcher,
-    },
-  };
+    return {
+      options: [{
+        value: "false",
+        placeholder: "飞行",
+      },
+      {
+        value: "true",
+        placeholder: "人视",
+      },
+      ],
+      selectedMode,
+      swit,
+    };
+  },
+  components: {
+    contentBlock,
+    dropDown,
+    switcher,
+  },
+};
 </script>
 
 <style lang="scss">
-  .global-main {
-    pointer-events: all;
+.global-main {
+  pointer-events: all;
 
-    .help-block {
-      width: 240px;
-      padding: 20px;
-      margin-top: 8px;
-      box-sizing: border-box;
-      background-color: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(8px);
+  .help-block {
+    width: 240px;
+    padding: 20px;
+    margin-top: 8px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+
+    hr {
+      width: 100%;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.5);
+      margin: 0;
+      border: none;
+    }
+
+    .title {
+      line-height: 17px;
+      margin-bottom: 6px;
+    }
+
+    .help-item {
       display: flex;
-      flex-direction: column;
-      color: #fff;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 7px;
+      margin-bottom: 6px;
+    }
+  }
 
-      hr {
-        width: 100%;
-        height: 1px;
-        background-color: rgba(255, 255, 255, 0.5);
-        margin: 0;
-        border: none;
+  .global-block {
+    width: 240px;
+    padding: 20px;
+    margin-top: 8px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+
+    .drop-item {
+      height: 24px;
+      display: flex;
+      justify-content: space-between;
+
+      span {
+        line-height: 24px;
+        font-weight: bold;
+        color: #fff;
       }
 
-      .title {
-        line-height: 17px;
-        margin-bottom: 6px;
-      }
-
-      .help-item {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        margin-top: 7px;
-        margin-bottom: 6px;
+      app-dropdown {
+        width: 57px;
       }
     }
 
-    .global-block {
-      width: 240px;
-      padding: 20px;
-      margin-top: 8px;
-      box-sizing: border-box;
-      background-color: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(8px);
+    .switch-item {
+      width: 100%;
+      margin-top: 12px;
 
-      .drop-item {
-        height: 24px;
+      app-switcher {
+        width: 100%;
         display: flex;
         justify-content: space-between;
-
-        span {
-          line-height: 24px;
-          font-weight: bold;
-          color: #fff;
-        }
-
-        app-dropdown {
-          width: 57px;
-        }
-      }
-
-      .switch-item {
-        width: 100%;
-        margin-top: 12px;
-
-        app-switcher {
-          width: 100%;
-          display: flex;
-          justify-content: space-between;
-        }
       }
     }
   }
+}
 </style>
