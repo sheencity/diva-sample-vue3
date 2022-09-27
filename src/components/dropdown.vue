@@ -8,7 +8,7 @@
     </p>
     <ul class="option" :style="{height: (!hideOptions ? 'auto':'0px')}">
       <li v-for="item in options" :key="item.value" class="dropdown-item" :title="item.placeholder"
-        @mousedown="menuClick(item)">{{item.placeholder}}</li>
+        @mousedown="menuClick({ ...item })">{{item.placeholder}}</li>
     </ul>
   </a>
 
@@ -40,7 +40,6 @@
       const menuClick = (item: DropdownData) => {
         hideOptions.value = true;
         context.emit("select", item);
-        console.log(item)
         context.emit("update:modelValue", item);
       };
       const onBlur = (ev) => {
