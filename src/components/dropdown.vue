@@ -1,62 +1,46 @@
 <template>
   <a class="select">
-    <p :class="{'select-disabled':disable}" style="margin: 0;user-select: none;">
-      <input type="text" class="placeholder" :disabled="disable" :value="placeholder" readonly @blur="onBlur($event)"
+    <p :class="{'select-disabled':disabled}" style="margin: 0;user-select: none;">
+      <input type="text" class="placeholder" :disabled="disabled" :value="modelValue?.placeholder" readonly @blur="onBlur($event)"
         @keydown='$event.preventDefault();' @click="onClick()">
       <img class="arrow-down" :class="{'activity':!hideOptions}" width="9" height="6"
-        :src="disable? getAssetsFile('arrow-down-disabled.svg') : getAssetsFile('arrow-down.svg')" />
+        :src="disabled? getAssetsFile('arrow-down-disabled.svg') : getAssetsFile('arrow-down.svg')" />
     </p>
     <ul class="option" :style="{height: (!hideOptions ? 'auto':'0px')}">
-      <li v-for="item in items" :key="item.value" class="dropdown-item" :title="item.placeholder"
-        @mousedown="menuClick(item)">{{item.placeholder}}</li>
+      <li v-for="item in options" :key="item.value" class="dropdown-item" :title="item.placeholder"
+        @mousedown="menuClick({ ...item })">{{item.placeholder}}</li>
     </ul>
   </a>
 
 </template>
 
 <script lang="ts">
-  import {
-    onMounted,
-    reactive,
-    ref
-  } from "@vue/runtime-core";
+  import { ref } from "@vue/runtime-core";
   import {
     DropdownData
   } from "@/models/dropdown-data.interface";
-  import {
-    toRef,
-    toRefs
-  } from "vue";
   import getAssetsFile from '@/util/public-use';
 
   export default {
     props: {
       options: Array,
-      initvalue: Object,
       disabled: Boolean,
+      modelValue: Object,
     },
     setup(props, context) {
       /** 隐藏 options */
       let hideOptions = ref(true);
-      let disable = toRef(props, "disabled");
-      let options = toRef(props, "options");
-      /** 当前选中的项目 */
-      let selectedItem: DropdownData = reactive({
-        value: props.initvalue.value,
-        placeholder: props.initvalue.placeholder,
-      });
 
       const onClick = () => {
-        if (disable.value) {
+        if (props.disabled) {
           return;
         }
         hideOptions.value = !hideOptions.value;
       };
       const menuClick = (item: DropdownData) => {
-        selectedItem.placeholder = item.placeholder;
-        selectedItem.value = item.value;
         hideOptions.value = true;
-        context.emit("select", selectedItem);
+        context.emit("select", item);
+        context.emit("update:modelValue", item);
       };
       const onBlur = (ev) => {
         ev.stopPropagation();
@@ -68,9 +52,6 @@
       };
       return {
         hideOptions,
-        disable,
-        items: options,
-        ...toRefs(selectedItem),
         getAssetsFile,
         // 事件
         onClick,

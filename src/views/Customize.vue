@@ -10,9 +10,9 @@
         <span>{{ lift.title }}</span>
         <div>
           <drop-down
+              v-model="lift.selected"
               :options="options"
-              :initvalue="initvalue"
-              @select="selectLift($event,i)"
+              @select="setSelectLift($event,i)"
               :disabled="false"
             ></drop-down>
           <span style="margin-left: 4px">层</span>
@@ -27,13 +27,13 @@ import contentBlock from "@/components/content-block.vue";
 import dropDown from "@/components/dropdown.vue";
 import { diva,data } from "@/global";
 
-import { onMounted, reactive } from "vue";
+import { onMounted, ref } from "vue";
 import { Elevator, ElevatorController, Model, Vector3 } from "@sheencity/diva-sdk";
 import { DropdownData } from "@/models/dropdown-data.interface";
 
 export default {
   setup() {
-    let lifts = reactive([
+    let lifts = ref([
       {
         title: '一号梯',
       },
@@ -91,23 +91,19 @@ export default {
      * @param $event (dropdownData) 下拉框选中的值
      * @param i (number) 被触发电梯的 index 值
      */
-    const selectLift = async ($event, i)=>{
+    const setSelectLift = async ($event, i)=>{
       const value = Number($event.value);
-      console.log('controllers', controllers);
       controllers[i].land(`f${value}`);
       data.changeCode(`elevatorController.land('f${value}')`);
     }
-
-
   
-
     onMounted(async () => {
       diva.client.applyScene('电梯演示');
       data.changeCode(`client.applyScene('电梯演示')`);
-      lifts = lifts.map((lift, index) => addSelected(lift, index));
+      lifts.value = lifts.value.map((lift, index) => addSelected(lift, index));
       for (let i = 0; i < 4; i++) {
         const [model] = await diva.client.getEntitiesByName<Model>(
-          lifts[i].title
+          lifts.value[i].title
         );
         const coord = await model.getCoordinate();
         const controller = new ElevatorController({
@@ -135,13 +131,10 @@ export default {
       }
     });
 
-
-
     return {
       options,
       lifts,
-      selectLift,
-      initvalue: { value: '1', placeholder: '1' },
+      setSelectLift,
     };
   },
   components: {

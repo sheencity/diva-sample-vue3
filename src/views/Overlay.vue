@@ -5,8 +5,7 @@
       <div class="drop-item">
         <span>种类</span>
         <div>
-          <drop-down :options="typeOptions" :initvalue="typeInintval" @select="setSelectedType" :disabled="false">
-          </drop-down>
+          <drop-down v-model="selectedType" :options="typeOptions" :disabled="false" />
         </div>
       </div>
       <div class="btn-item">
@@ -39,22 +38,25 @@
       <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'Marker'">
         <span>对齐方式</span>
         <div>
-          <drop-down :options="alignOptions" :initvalue="alignInintval" @select="setSelectedAlign" :disabled="false">
-          </drop-down>
+          <drop-down v-model="selectedAlign" :options="alignOptions" :disabled="false" />
         </div>
       </div>
       <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'emissiveOverlay'">
         <span>类型</span>
         <div>
-          <drop-down :options="emissiveOptions" :initvalue="emissiveInintval" @select="setSelectedEmissive"
-            :disabled="false"></drop-down>
+          <drop-down v-model="selectedEmissive" :options="emissiveOptions" :disabled="false" />
         </div>
       </div>
       <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'poi'">
         <span>类型</span>
         <div>
-          <drop-down :options="iconOptions" :initvalue="iconInintval" @select="setSelectedIcon" :disabled="false">
-          </drop-down>
+          <drop-down v-model="selectedIconType" :options="iconTypeOptions" :disabled="false" />
+        </div>
+      </div>
+      <div class="drop-item" style="margin-top: 12px;" v-if="selectedType.value === 'poi'">
+        <span>图标</span>
+        <div>
+          <drop-down v-model="selectedIcon" :options="iconOptions" :disabled="false" />
         </div>
       </div>
       <div class="input-item">
@@ -156,6 +158,7 @@
     EmissiveOverlay,
     MarkerOverlay,
     OverlayType,
+    POIIconType,
     POIOverlay,
   } from '@/models/overlay.model';
   import { DropdownData } from '@/models/dropdown-data.interface';
@@ -246,6 +249,19 @@
           placeholder: '卫生间'
         },
       ];
+      let iconTypeOptions = [{
+          value: POIIconType.type1,
+          placeholder: 'POI文字标签'
+        },
+        {
+          value: POIIconType.type2,
+          placeholder: 'POI圆形标签'
+        },
+        {
+          value: POIIconType.type3,
+          placeholder: 'POI水滴'
+        },
+      ];
       let emissiveOptions = [{
           value: EmissionType.type1,
           placeholder: '悬浮标记01'
@@ -280,18 +296,26 @@
         },
       ];
       let overlays: (POIOverlay | MarkerOverlay | EmissiveOverlay)[] = reactive([]);
-      let selectedType = reactive({
+      let selectedType = ref({
         value: OverlayType.POI,
         placeholder: 'POI',
       });
-      let selectedIcon: DropdownData = {
+      let selectedIcon: Ref<DropdownData> = ref({
         value: POIIcon.Camera,
         placeholder: '摄像头',
-      };
-      let selectedEmissive: DropdownData<EmissionType> = {
+      });
+      let selectedIconType: Ref<DropdownData> = ref({
+        value: POIIconType.type1,
+        placeholder: 'POI文字标签',
+      });
+      let selectedEmissive: Ref<DropdownData<EmissionType>> = ref({
         value: EmissionType.type1,
         placeholder: '悬浮标记01',
-      };
+      });
+      let selectedAlign = ref({
+        value: 'center',
+        placeholder: '居中',
+      } as { value: 'left' | 'right' | 'center'; placeholder: string });
 
       let corrdinateX = ref(0.0);
       let corrdinateY = ref(0.0);
@@ -309,18 +333,14 @@
       let selectedId = ref(null);
       let emission = ref(1.0);
       let speed = ref(2.0);
-      let selectedAlign = {
-        value: 'center',
-        placeholder: '居中',
-      } as { value: 'left' | 'right' | 'center'; placeholder: string };
 
       /**
        * 创建覆盖物
        */
       const create = async () => {
-        if (selectedType.value === OverlayType.POI) {
+        if (selectedType.value.value === OverlayType.POI) {
           const overlay = new POIOverlay();
-          overlay.icon = selectedIcon.value as POIIcon;
+          overlay.icon = selectedIcon.value.value as POIIcon;
           overlay.coordinateX = corrdinateX.value;
           overlay.coordinateY = corrdinateY.value;
           overlay.coordinateZ = corrdinateZ.value;
@@ -340,7 +360,7 @@
               overlay.coordinateZ
             ),
             resource: {
-              name: 'POI文字标签',
+              name: selectedIconType.value.value,
             },
             id: overlay.id,
             name: uniqueName('poi'),
@@ -353,14 +373,14 @@
             `const overlay = new POI(config_learnMoreInTutorial);`,
             `await overlay.setClient(diva.client);`
           );
-        } else if (selectedType.value === OverlayType.Marker) {
+        } else if (selectedType.value.value === OverlayType.Marker) {
           const overlay = new MarkerOverlay();
           overlay.coordinateX = corrdinateX.value;
           overlay.coordinateY = corrdinateY.value;
           overlay.coordinateZ = corrdinateZ.value;
           overlay.title = title.value;
           overlay.content = content.value;
-          overlay.align = selectedAlign.value;
+          overlay.align = selectedAlign.value.value;
           overlay.color = color.value;
           overlay.scale = scale.value;
           overlay.opacity = opacity.value;
@@ -396,9 +416,9 @@
             `const overlay = new Marker(config_learnMoreInTutorial);`,
             `await overlay.setClient(diva.client);`
           );
-        } else if (selectedType.value === OverlayType.Emissive) {
+        } else if (selectedType.value.value === OverlayType.Emissive) {
           const overlay = new EmissiveOverlay();
-          overlay.icon = selectedEmissive.value;
+          overlay.icon = selectedEmissive.value.value;
           overlay.coordinateX = corrdinateX.value;
           overlay.coordinateY = corrdinateY.value;
           overlay.coordinateZ = corrdinateZ.value;
@@ -472,18 +492,15 @@
        * 创建覆盖物之后重置所有配置
        */
       const reset = () => {
-        selectedIcon = {
-          value: POIIcon.Camera,
-          placeholder: '摄像头',
-        };
-        selectedEmissive = {
-          value: EmissionType.type1,
-          placeholder: '悬浮标记01',
-        };
-        selectedAlign = {
-          value: 'center',
-          placeholder: '居中',
-        };
+        selectedIcon.value.value = POIIcon.Camera,
+        selectedIcon.value.placeholder = '摄像头',
+        selectedIconType.value.value = POIIconType.type1,
+        selectedIconType.value.placeholder = 'POI文字标签',
+        selectedEmissive.value.value = EmissionType.type1,
+        selectedEmissive.value.placeholder = '悬浮标记01',
+        selectedAlign.value.value = 'center',
+        selectedAlign.value.placeholder = '居中',
+
         corrdinateX.value = 0.0;
         corrdinateY.value = 0.0;
         corrdinateZ.value = 0.0;
@@ -542,30 +559,9 @@
           entity.setVisibility(true);
         });
       });
-      const setSelectedType = (item) => {
-        selectedType.value = item.value;
-        selectedType.placeholder = item.placeholder;
-      };
-      const setSelectedAlign = (item) => {
-        selectedAlign.value = item.value;
-        selectedAlign.placeholder = item.placeholder;
-      };
-      const setSelectedEmissive = (item) => {
-        selectedEmissive.value = item.value;
-        selectedEmissive.placeholder = item.placeholder;
-      };
-      const setSelectedIcon = (item) => {
-        selectedIcon.value = item.value;
-        selectedIcon.placeholder = item.placeholder;
-      };
 
       return {
         typeOptions,
-        typeInintval: {
-          value: 'poi',
-          placeholder: 'POI'
-        },
-        setSelectedType,
         pickup,
         onKeyDown,
         corrdinateX,
@@ -574,20 +570,9 @@
         title,
         content,
         alignOptions,
-        alignInintval: {
-          value: 'center',
-          placeholder: '居中'
-        },
         emissiveOptions,
-        emissiveInintval: {
-          value: '悬浮标记01',
-          placeholder: '悬浮标记01'
-        },
         iconOptions,
-        iconInintval: {
-          value: 'camera',
-          placeholder: '摄像头'
-        },
+        iconTypeOptions,
         color,
         rotationX,
         rotationY,
@@ -603,10 +588,11 @@
         selectOverlay,
         del,
         selectedId,
+        selectedIcon,
         selectedType,
-        setSelectedAlign,
-        setSelectedEmissive,
-        setSelectedIcon
+        selectedAlign,
+        selectedEmissive,
+        selectedIconType,
       };
     },
     components: {

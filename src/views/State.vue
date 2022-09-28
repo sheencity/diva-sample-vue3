@@ -5,7 +5,7 @@
       <div class="drop-item" :class="{ 'selected': false }">
         <span>{{equipment.title}}</span>
         <div class="drop-down">
-          <drop-down :options="options" :initvalue="inintval" @select="onChange(equipment, $event as any)" :disabled="false">
+          <drop-down v-model="equipment.selected" :options="options" @select="onChange(equipment, $event as any)" :disabled="false">
           </drop-down>
         </div>
       </div>
@@ -35,7 +35,7 @@
 
   export default {
     setup() {
-      let equipments = [{
+      let equipments = ref([{
           title: "空调",
           state: RenderingStyleMode.Default,
         },
@@ -51,7 +51,7 @@
           title: "冰箱",
           state: RenderingStyleMode.Default,
         },
-      ];
+      ]);
 
       const addSelected = (equipment: {
         title: string;
@@ -107,7 +107,7 @@
           selected
         };
       };
-      equipments = equipments.map((equipment) => addSelected(equipment));
+      equipments.value = equipments.value.map((equipment) => addSelected(equipment));
       let options = [{
           value: RenderingStyleMode.Default,
           placeholder: "默认"
@@ -174,7 +174,7 @@
       });
 
       onUnmounted(() => {
-        equipments.forEach(async (equi) => {
+        equipments.value.forEach(async (equi) => {
           const [model] = await diva.client.getEntitiesByName < Model > (equi.title);
           model.setRenderingStyleMode(RenderingStyleMode.Default);
         });
@@ -184,10 +184,6 @@
         equipments,
         options,
         onChange,
-        inintval: {
-          value: RenderingStyleMode.Default,
-          placeholder: "默认"
-        },
       };
     },
     components: {
